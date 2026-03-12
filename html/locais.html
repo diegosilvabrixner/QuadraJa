@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuadraJá — Locais</title>
+  <link rel="stylesheet" href="../css/shared.css"/>
+  <link rel="stylesheet" href="../css/locais.css"/>
+</head>
+<body>
+  <div class="phone">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>●●● 📶</span>
+      <span>98%🔋</span>
+    </div>
+
+    <div class="screen">
+      <!-- Header -->
+      <div class="locais-header fade-up">
+        <div>
+          <p class="greeting">Olá, Lucas 👋</p>
+          <h2>Escolha um local</h2>
+        </div>
+        <div class="avatar">L</div>
+      </div>
+
+      <!-- Search -->
+      <div class="input-wrap search-wrap fade-up-1">
+        <span class="icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar arenas..."/>
+        <button class="filter-btn" id="filterBtn">⚡</button>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="filter-chips fade-up-2" id="filterChips">
+        <button class="fchip active" data-filter="all">Todos</button>
+        <button class="fchip" data-filter="areia">🏖 Areia</button>
+        <button class="fchip" data-filter="piso">🏟 Piso</button>
+        <button class="fchip" data-filter="coberta">🏠 Coberta</button>
+      </div>
+
+      <!-- Section label -->
+      <p class="section-label fade-up-3">4 locais encontrados</p>
+
+      <!-- Arena list -->
+      <div class="arena-list fade-up-3" id="arenaList">
+
+        <div class="arena-card" data-type="areia" tabindex="0">
+          <div class="arena-image">🏖</div>
+          <div class="arena-info">
+            <div class="arena-row1">
+              <strong>Arena Centro</strong>
+              <span class="chip chip-green">Aberta</span>
+            </div>
+            <p class="arena-addr">📍 Rua das Palmeiras, 240 · 1,2 km</p>
+            <div class="arena-row2">
+              <span class="arena-price">R$80<span>/h</span></span>
+              <span class="arena-rating">⭐ 4.8 <small>(47)</small></span>
+              <span class="arena-courts">🏐 4 quadras</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arena-card" data-type="piso" tabindex="0">
+          <div class="arena-image">🏟</div>
+          <div class="arena-info">
+            <div class="arena-row1">
+              <strong>Arena Norte</strong>
+              <span class="chip chip-green">Aberta</span>
+            </div>
+            <p class="arena-addr">📍 Av. Paulista, 1800 · 2,4 km</p>
+            <div class="arena-row2">
+              <span class="arena-price">R$70<span>/h</span></span>
+              <span class="arena-rating">⭐ 4.6 <small>(31)</small></span>
+              <span class="arena-courts">🏐 2 quadras</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arena-card" data-type="coberta" tabindex="0">
+          <div class="arena-image">🏠</div>
+          <div class="arena-info">
+            <div class="arena-row1">
+              <strong>Arena Coberta Sul</strong>
+              <span class="chip chip-yellow">Lotada</span>
+            </div>
+            <p class="arena-addr">📍 Rua Augusta, 900 · 3,1 km</p>
+            <div class="arena-row2">
+              <span class="arena-price">R$90<span>/h</span></span>
+              <span class="arena-rating">⭐ 4.9 <small>(88)</small></span>
+              <span class="arena-courts">🏐 6 quadras</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arena-card" data-type="areia" tabindex="0">
+          <div class="arena-image">🏖</div>
+          <div class="arena-info">
+            <div class="arena-row1">
+              <strong>Beach Sport Lapa</strong>
+              <span class="chip chip-green">Aberta</span>
+            </div>
+            <p class="arena-addr">📍 Largo da Lapa, 12 · 4,7 km</p>
+            <div class="arena-row2">
+              <span class="arena-price">R$75<span>/h</span></span>
+              <span class="arena-rating">⭐ 4.7 <small>(22)</small></span>
+              <span class="arena-courts">🏐 3 quadras</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <button class="nav-item active">
+        <span class="nav-icon">🏟</span>Locais
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">📅</span>Reservas
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">🏆</span>Favoritos
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">👤</span>Perfil
+      </button>
+    </nav>
+  </div>
+
+  <script src="../js/locais.js"></script>
+</body>
+</html>

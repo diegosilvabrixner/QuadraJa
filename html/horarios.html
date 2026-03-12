@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuadraJá — Horários</title>
+  <link rel="stylesheet" href="../css/shared.css"/>
+  <link rel="stylesheet" href="../css/horarios.css"/>
+</head>
+<body>
+<div class="phone">
+  <div class="status-bar"><span>9:41</span><span>●●● 📶</span><span>98%🔋</span></div>
+  <div class="screen">
+
+    <div class="header fade-up">
+      <button class="btn-back" onclick="history.back()">←</button>
+      <div class="header-texts">
+        <h2>Horários</h2>
+        <p>Quadra A1 · Arena Centro</p>
+      </div>
+    </div>
+
+    <!-- Toggle Avulso / Mensal -->
+    <div class="type-toggle fade-up-1" id="typeToggle">
+      <button class="ttab active" data-type="avulso">Avulso</button>
+      <button class="ttab" data-type="mensal">Mensal 🔁</button>
+    </div>
+
+    <!-- AVULSO panel -->
+    <div id="panelAvulso">
+      <!-- Calendário mini -->
+      <p class="section-label fade-up-2">Selecione a data</p>
+      <div class="mini-cal fade-up-2" id="miniCal">
+        <!-- gerado pelo JS -->
+      </div>
+
+      <!-- Slots de horário -->
+      <p class="section-label fade-up-3" style="margin-top:18px">Horários disponíveis</p>
+      <div class="slots-grid fade-up-3" id="slotsGrid">
+        <!-- gerado pelo JS -->
+      </div>
+    </div>
+
+    <!-- MENSAL panel (hidden by default) -->
+    <div id="panelMensal" style="display:none">
+      <p class="section-label fade-up-2">Dia fixo da semana</p>
+      <div class="weekday-grid fade-up-2" id="weekdayGrid">
+        <button class="wday" data-day="Seg">Seg</button>
+        <button class="wday" data-day="Ter">Ter</button>
+        <button class="wday" data-day="Qua">Qua</button>
+        <button class="wday" data-day="Qui">Qui</button>
+        <button class="wday" data-day="Sex">Sex</button>
+        <button class="wday active" data-day="Sáb">Sáb</button>
+        <button class="wday" data-day="Dom">Dom</button>
+      </div>
+      <p class="section-label fade-up-3" style="margin-top:18px">Horário fixo</p>
+      <div class="slots-grid fade-up-3" id="slotsGridMensal">
+        <!-- gerado pelo JS -->
+      </div>
+    </div>
+
+    <!-- Resumo -->
+    <div class="summary-box fade-up-4" id="summaryBox" style="display:none">
+      <div class="summary-row">
+        <span class="text-muted">Quadra</span>
+        <strong>A1 · Arena Centro</strong>
+      </div>
+      <div class="summary-row">
+        <span class="text-muted">Data / Dia</span>
+        <strong id="summaryDate">—</strong>
+      </div>
+      <div class="summary-row">
+        <span class="text-muted">Horário</span>
+        <strong id="summaryTime">—</strong>
+      </div>
+      <div class="divider"></div>
+      <div class="summary-row">
+        <span class="text-muted">Total</span>
+        <span class="price-tag" id="summaryPrice">—</span>
+      </div>
+    </div>
+
+    <button class="btn-primary fade-up-5" id="continueBtn" style="margin-top:16px" disabled>
+      Ir para pagamento →
+    </button>
+
+  </div>
+</div>
+<script src="../js/horarios.js"></script>
+</body>
+</html>

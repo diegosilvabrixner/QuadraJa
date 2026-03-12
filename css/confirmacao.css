@@ -1,0 +1,165 @@
+/* screen-06-confirmacao.css — QuadraJá · Confirmação */
+
+.confirm-screen { padding-top: 24px; }
+
+/* Hero de sucesso */
+.success-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s ease both;
+}
+
+.success-rings {
+  position: relative;
+  width: 110px; height: 110px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  animation: expand 1.4s ease-out infinite;
+}
+.ring-1 { width: 80px;  height: 80px;  animation-delay: 0s;    opacity: 0.5; }
+.ring-2 { width: 95px;  height: 95px;  animation-delay: 0.2s;  opacity: 0.3; }
+.ring-3 { width: 110px; height: 110px; animation-delay: 0.4s;  opacity: 0.15; }
+
+@keyframes expand {
+  0%   { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.05); opacity: 0; }
+}
+
+.success-icon {
+  width: 68px; height: 68px;
+  background: var(--gradient);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #000;
+  font-size: 30px;
+  font-weight: 900;
+  box-shadow: 0 12px 40px rgba(0,229,160,0.35);
+  animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  z-index: 1;
+}
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.success-title {
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin-bottom: 6px;
+  animation: fadeUp 0.5s 0.15s ease both;
+}
+.success-sub {
+  color: var(--text-muted);
+  font-size: 14px;
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+
+/* Booking code */
+.booking-code-card {
+  background: var(--card);
+  border: 1px solid rgba(0,229,160,0.25);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  animation: fadeUp 0.5s 0.25s ease both;
+}
+.code-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0 6px;
+}
+.code-display span {
+  color: var(--accent);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+}
+.copy-code-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 6px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.copy-code-btn:hover { border-color: var(--accent); }
+.code-hint {
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* Details */
+.confirm-details {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 6px 16px;
+  margin-bottom: 14px;
+  animation: fadeUp 0.5s 0.3s ease both;
+}
+.confirm-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+}
+.confirm-icon {
+  width: 36px; height: 36px;
+  background: var(--surface);
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.confirm-row > div { flex: 1; }
+.confirm-row strong { color: var(--text); font-size: 14px; font-weight: 700; display: block; margin-bottom: 2px; }
+.confirm-row p { color: var(--text-muted); font-size: 12px; }
+.btn-map {
+  background: var(--accent-dim);
+  border: 1px solid rgba(0,229,160,0.25);
+  border-radius: var(--r-sm);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Notification banner */
+.notif-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,209,102,0.08);
+  border: 1px solid rgba(255,209,102,0.2);
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  animation: fadeUp 0.5s 0.35s ease both;
+  font-size: 13px;
+}
+.notif-banner p { color: var(--text-muted); }
+.notif-banner strong { color: var(--yellow); }
+
+/* Actions */
+.confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeUp 0.5s 0.4s ease both;
+}

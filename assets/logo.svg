@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" fill="none">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E5A0"/>
+      <stop offset="100%" stop-color="#0099FF"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00E5A0"/>
+      <stop offset="100%" stop-color="#0077DD"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- PIN outer shape -->
+  <path d="M120 8 C72 8 34 46 34 94 C34 142 78 192 106 224 L120 240 L134 224 C162 192 206 142 206 94 C206 46 168 8 120 8Z"
+    fill="url(#g1)" filter="url(#glow)"/>
+
+  <!-- PIN inner dark cutout -->
+  <path d="M120 26 C82 26 52 56 52 94 C52 130 86 174 106 198 L120 214 L134 198 C154 174 188 130 188 94 C188 56 158 26 120 26Z"
+    fill="#080C14"/>
+
+  <!-- COURT FLOOR -->
+  <rect x="54" y="118" width="132" height="58" rx="4" fill="#0D1A2A"/>
+  <!-- Court lines -->
+  <rect x="54" y="118" width="132" height="3" rx="1" fill="url(#g1)" opacity="0.5"/>
+  <rect x="54" y="173" width="132" height="3" rx="1" fill="url(#g1)" opacity="0.5"/>
+  <rect x="54" y="118" width="3" height="58" rx="1" fill="url(#g1)" opacity="0.5"/>
+  <rect x="183" y="118" width="3" height="58" rx="1" fill="url(#g1)" opacity="0.5"/>
+
+  <!-- NET POSTS -->
+  <rect x="71" y="96" width="6" height="84" rx="3" fill="url(#g1)"/>
+  <rect x="163" y="96" width="6" height="84" rx="3" fill="url(#g1)"/>
+
+  <!-- NET TOP BAR (yellow accent like original) -->
+  <rect x="71" y="114" width="98" height="6" rx="3" fill="#FFD166"/>
+
+  <!-- NET MESH vertical lines -->
+  <line x1="86"  y1="120" x2="86"  y2="175" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="99"  y1="120" x2="99"  y2="175" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="112" y1="120" x2="112" y2="175" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="125" y1="120" x2="125" y2="175" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="138" y1="120" x2="138" y2="175" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="151" y1="120" x2="151" y2="175" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="164" y1="120" x2="164" y2="175" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+
+  <!-- NET MESH horizontal lines -->
+  <line x1="73" y1="133" x2="167" y2="133" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="73" y1="146" x2="167" y2="146" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="73" y1="159" x2="167" y2="159" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+  <line x1="73" y1="172" x2="167" y2="172" stroke="#00E5A0" stroke-width="1.2" opacity="0.4"/>
+
+  <!-- VOLLEYBALL -->
+  <circle cx="120" cy="74" r="28" fill="#F5F0E8"/>
+  <!-- Ball panel lines -->
+  <path d="M96 70 Q120 60 144 70" stroke="#0077CC" stroke-width="2.5" fill="none"/>
+  <path d="M94 80 Q120 90 146 80" stroke="#0077CC" stroke-width="2.5" fill="none"/>
+  <path d="M108 48 Q104 74 108 100" stroke="#00AA77" stroke-width="2" fill="none"/>
+  <path d="M132 48 Q136 74 132 100" stroke="#00AA77" stroke-width="2" fill="none"/>
+  <circle cx="120" cy="74" r="28" stroke="rgba(0,229,160,0.25)" stroke-width="1.5" fill="none"/>
+
+  <!-- HANDLE / bottom of pin (matches original racket handle shape) -->
+  <path d="M104 212 L88 248 Q98 262 120 262 Q142 262 152 248 L136 212 Z" fill="url(#g2)"/>
+  <!-- Handle hole (like original) -->
+  <ellipse cx="120" cy="238" rx="10" ry="7" fill="#080C14"/>
+
+  <!-- TEXT: QuadraJá -->
+  <text x="120" y="290"
+    font-family="'Arial Black', Arial, sans-serif"
+    font-weight="900"
+    font-size="38"
+    text-anchor="middle"
+    fill="url(#g1)"
+    letter-spacing="-0.5">QuadraJá</text>
+
+  <!-- underline dot -->
+  <rect x="108" y="296" width="24" height="4" rx="2" fill="url(#g1)" opacity="0.5"/>
+</svg>

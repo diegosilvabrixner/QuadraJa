@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuadraJá — Confirmação</title>
+  <link rel="stylesheet" href="../css/shared.css"/>
+  <link rel="stylesheet" href="../css/confirmacao.css"/>
+</head>
+<body>
+<div class="phone">
+  <div class="status-bar"><span>9:41</span><span>●●● 📶</span><span>98%🔋</span></div>
+  <div class="screen confirm-screen">
+
+    <!-- Success animation -->
+    <div class="success-hero">
+      <div class="success-rings">
+        <div class="ring ring-3"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-1"></div>
+        <div class="success-icon">✓</div>
+      </div>
+      <h2 class="success-title">Reserva confirmada!</h2>
+      <p class="success-sub">Seu jogo está garantido 🏐</p>
+    </div>
+
+    <!-- Booking code -->
+    <div class="booking-code-card">
+      <p class="section-label">Código da reserva</p>
+      <div class="code-display">
+        <span id="bookingCode">QJ-2025-A1K9</span>
+        <button class="copy-code-btn" id="copyCodeBtn" title="Copiar">📋</button>
+      </div>
+      <p class="code-hint">Apresente este código na recepção</p>
+    </div>
+
+    <!-- Booking details -->
+    <div class="confirm-details">
+      <div class="confirm-row">
+        <span class="confirm-icon">🏟</span>
+        <div>
+          <strong>Arena Centro</strong>
+          <p>Quadra A1 · Areia coberta</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="confirm-row">
+        <span class="confirm-icon">📅</span>
+        <div>
+          <strong>Sábado, 19 de julho de 2025</strong>
+          <p>10:00 – 11:00 (1 hora)</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="confirm-row">
+        <span class="confirm-icon">💰</span>
+        <div>
+          <strong>R$ 80,00</strong>
+          <p>Pago via PIX · Aprovado às 9:41</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="confirm-row">
+        <span class="confirm-icon">📍</span>
+        <div>
+          <strong>Como chegar</strong>
+          <p>Rua das Palmeiras, 240 · 1,2 km</p>
+        </div>
+        <button class="btn-map">Mapa →</button>
+      </div>
+    </div>
+
+    <!-- Notification info -->
+    <div class="notif-banner">
+      <span>🔔</span>
+      <p>Você receberá um lembrete por SMS <strong>2 horas antes</strong> do jogo</p>
+    </div>
+
+    <!-- Actions -->
+    <div class="confirm-actions">
+      <button class="btn-primary" id="newReservationBtn">
+        + Nova reserva
+      </button>
+      <button class="btn-secondary" id="shareBtn">
+        📤 Compartilhar
+      </button>
+    </div>
+
+  </div>
+</div>
+<script src="../js/confirmacao.js"></script>
+</body>
+</html>

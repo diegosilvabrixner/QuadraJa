@@ -1,0 +1,170 @@
+/* screen-04-horarios.css — QuadraJá · Horários */
+
+/* Toggle */
+.type-toggle {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 4px;
+  margin-bottom: 22px;
+  gap: 4px;
+}
+.ttab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ttab.active {
+  background: var(--gradient);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(0,229,160,0.25);
+}
+
+/* Mini Calendar */
+.mini-cal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 14px;
+}
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cal-nav span {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 14px;
+}
+.cal-nav button {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 30px; height: 30px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  cursor: pointer;
+}
+.cal-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+}
+.cal-days-header span {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+}
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+  border: none;
+  background: transparent;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.15s;
+}
+.cal-day:hover:not(.inactive) { background: var(--accent-dim); color: var(--accent); }
+.cal-day.today  { color: var(--accent); font-weight: 800; }
+.cal-day.active { background: var(--gradient); color: #000; box-shadow: 0 3px 8px rgba(0,229,160,0.3); }
+.cal-day.inactive { color: var(--text-dim); cursor: default; }
+.cal-day.has-event::after {
+  content: '·';
+  position: absolute;
+  bottom: 2px;
+  font-size: 16px;
+  color: var(--accent);
+  line-height: 0;
+}
+.cal-day { position: relative; }
+
+/* Slots grid */
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.slot {
+  padding: 10px 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.15s;
+}
+.slot:hover:not(.occupied) { border-color: var(--accent); color: var(--accent); }
+.slot.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.slot.occupied { background: transparent; color: var(--text-dim); cursor: not-allowed; text-decoration: line-through; }
+
+/* Weekday grid */
+.weekday-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.wday {
+  flex: 1;
+  min-width: 36px;
+  padding: 10px 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.wday:hover, .wday.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Summary box */
+.summary-box {
+  background: var(--card);
+  border: 1px solid rgba(0,229,160,0.25);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+.summary-row strong { color: var(--text); font-weight: 700; }

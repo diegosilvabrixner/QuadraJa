@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuadraJá — Pagamento</title>
+  <link rel="stylesheet" href="../css/shared.css"/>
+  <link rel="stylesheet" href="../css/pagamento.css"/>
+</head>
+<body>
+<div class="phone">
+  <div class="status-bar"><span>9:41</span><span>●●● 📶</span><span>98%🔋</span></div>
+  <div class="screen">
+
+    <div class="header fade-up">
+      <button class="btn-back" onclick="history.back()">←</button>
+      <div class="header-texts">
+        <h2>Pagamento</h2>
+        <p>Confirme e pague para reservar</p>
+      </div>
+    </div>
+
+    <!-- Booking summary -->
+    <div class="booking-summary fade-up-1">
+      <div class="booking-icon">🏐</div>
+      <div class="booking-details">
+        <strong>Quadra A1 · Arena Centro</strong>
+        <p>Sábado, 19/07/2025 · 10:00 – 11:00</p>
+        <span class="chip chip-green">Avulso · 1 hora</span>
+      </div>
+      <div class="booking-total">
+        <span class="price-total">R$ 80</span>
+      </div>
+    </div>
+
+    <!-- Payment method -->
+    <p class="section-label fade-up-2" style="margin-top:20px">Forma de pagamento</p>
+    <div class="payment-methods fade-up-2" id="paymentMethods">
+
+      <div class="payment-option active" data-method="pix">
+        <div class="pm-icon">⚡</div>
+        <div class="pm-info">
+          <strong>PIX</strong>
+          <p>Aprovação instantânea</p>
+        </div>
+        <div class="pm-check">✓</div>
+      </div>
+
+      <div class="payment-option" data-method="credit">
+        <div class="pm-icon">💳</div>
+        <div class="pm-info">
+          <strong>Cartão de crédito</strong>
+          <p>Visa, Master, Elo</p>
+        </div>
+        <div class="pm-check"></div>
+      </div>
+
+      <div class="payment-option" data-method="debit">
+        <div class="pm-icon">🏦</div>
+        <div class="pm-info">
+          <strong>Cartão de débito</strong>
+          <p>Débito automático</p>
+        </div>
+        <div class="pm-check"></div>
+      </div>
+
+    </div>
+
+    <!-- PIX panel -->
+    <div id="pixPanel" class="pix-panel fade-up-3">
+      <div class="pix-qr" id="pixQr">
+        <div class="qr-placeholder">
+          <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Simplified QR code look -->
+            <rect width="120" height="120" rx="8" fill="#0F1623"/>
+            <!-- Corner squares -->
+            <rect x="8" y="8" width="30" height="30" rx="3" fill="#00E5A0"/>
+            <rect x="12" y="12" width="22" height="22" rx="2" fill="#0F1623"/>
+            <rect x="16" y="16" width="14" height="14" rx="1" fill="#00E5A0"/>
+            <rect x="82" y="8" width="30" height="30" rx="3" fill="#00E5A0"/>
+            <rect x="86" y="12" width="22" height="22" rx="2" fill="#0F1623"/>
+            <rect x="90" y="16" width="14" height="14" rx="1" fill="#00E5A0"/>
+            <rect x="8" y="82" width="30" height="30" rx="3" fill="#00E5A0"/>
+            <rect x="12" y="86" width="22" height="22" rx="2" fill="#0F1623"/>
+            <rect x="16" y="90" width="14" height="14" rx="1" fill="#00E5A0"/>
+            <!-- Data dots -->
+            <rect x="46" y="8"  width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="56" y="8"  width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="66" y="8"  width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="46" y="18" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="66" y="18" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="56" y="28" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="46" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="56" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="66" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="8"  y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="18" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="28" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="8"  y="56" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="28" y="56" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="46" y="56" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="76" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="86" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="96" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="106" y="46" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="76" y="56" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="96" y="56" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="8"  y="66" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="18" y="66" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="28" y="66" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="46" y="66" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="56" y="66" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="76" y="66" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="106" y="66" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="46" y="76" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="66" y="76" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="86" y="76" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="96" y="76" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="106" y="76" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="46" y="86" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="56" y="96" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="76" y="86" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="96" y="86" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="106" y="86" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="46" y="106" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="66" y="106" width="6" height="6" rx="1" fill="#00E5A0"/>
+            <rect x="86" y="106" width="6" height="6" rx="1" fill="#00E5A0"/>
+          </svg>
+        </div>
+        <p class="pix-expire">Expira em <span id="pixTimer" class="accent">14:59</span></p>
+      </div>
+      <button class="btn-secondary copy-btn" id="copyPixBtn">📋 Copiar código PIX</button>
+    </div>
+
+    <!-- Card panel (hidden) -->
+    <div id="cardPanel" style="display:none" class="card-panel fade-up-3">
+      <div class="input-group">
+        <label class="input-label">Número do cartão</label>
+        <div class="input-wrap">
+          <span class="icon">💳</span>
+          <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19"/>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div class="input-group" style="flex:1">
+          <label class="input-label">Validade</label>
+          <div class="input-wrap">
+            <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5"/>
+          </div>
+        </div>
+        <div class="input-group" style="flex:1">
+          <label class="input-label">CVV</label>
+          <div class="input-wrap">
+            <input type="text" id="cardCvv" placeholder="000" maxlength="3"/>
+          </div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Nome no cartão</label>
+        <div class="input-wrap">
+          <input type="text" id="cardName" placeholder="LUCAS MENDES"/>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary fade-up-5" id="payBtn" style="margin-top:20px">
+      Pagar R$ 80,00 →
+    </button>
+    <p class="pay-info">🔒 Pagamento 100% seguro via certificação PCI</p>
+
+  </div>
+</div>
+<script src="../js/pagamento.js"></script>
+</body>
+</html>

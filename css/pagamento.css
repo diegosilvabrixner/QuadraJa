@@ -1,0 +1,118 @@
+/* screen-05-pagamento.css — QuadraJá · Pagamento */
+
+/* Booking summary */
+.booking-summary {
+  background: var(--card);
+  border: 1px solid rgba(0,229,160,0.2);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.booking-icon {
+  width: 50px; height: 50px;
+  background: var(--accent-dim);
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.booking-details { flex: 1; }
+.booking-details strong { color: var(--text); font-size: 14px; font-weight: 700; display: block; margin-bottom: 3px; }
+.booking-details p { color: var(--text-muted); font-size: 12px; margin-bottom: 6px; }
+.price-total {
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* Payment methods */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.payment-option:hover { border-color: var(--accent); }
+.payment-option.active {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+.pm-icon {
+  width: 38px; height: 38px;
+  background: var(--surface);
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.pm-info { flex: 1; }
+.pm-info strong { color: var(--text); font-size: 14px; font-weight: 700; }
+.pm-info p { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+.pm-check {
+  width: 22px; height: 22px;
+  border-radius: var(--r-full);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: #000; font-size: 12px; font-weight: 800;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.payment-option.active .pm-check {
+  background: var(--gradient);
+  border-color: var(--accent);
+}
+
+/* PIX panel */
+.pix-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.pix-qr {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.qr-placeholder {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+.pix-expire {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.copy-btn { font-size: 14px; }
+
+/* Card panel */
+.card-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Footer info */
+.pay-info {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 11px;
+  margin-top: 10px;
+}
