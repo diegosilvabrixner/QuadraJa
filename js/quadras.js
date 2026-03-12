@@ -23,9 +23,9 @@ function selectCourt(id) {
   const card = document.querySelector(`.court-card[data-id="${id}"]:not(.disabled)`);
   if (card) card.classList.add('active');
 
-  // Em produção: ir para tela de horários
-  // window.location.href = `screen-04-horarios.html?court=${id}`;
-  console.log('Quadra selecionada:', id);
+  setTimeout(() => {
+    window.location.href = `horarios.html?court=${id}`;
+  }, 400);
 }
 
 // Clique nas quadras SVG

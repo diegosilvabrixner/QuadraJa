@@ -62,11 +62,10 @@ loginForm.addEventListener('submit', (e) => {
   loginBtn.textContent = 'Entrando...';
 
   setTimeout(() => {
-    // Em produção: redirecionar para a tela de Locais
-    // window.location.href = 'screen-02-locais.html';
-    loginBtn.classList.remove('loading');
-    loginBtn.textContent = 'Entrar';
     showSuccess();
+    setTimeout(() => {
+      window.location.href = 'locais.html';
+    }, 800);
   }, 1800);
 });
 

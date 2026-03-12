@@ -152,8 +152,14 @@ function addHour(time) {
 
 // ── Continue button ────────────────────────────────────
 document.getElementById('continueBtn').addEventListener('click', () => {
-  // Em produção: window.location.href = 'screen-05-pagamento.html?...';
-  console.log('Ir para pagamento', { mode, selectedDay, selectedSlot });
+  const params = new URLSearchParams({
+    court:   new URLSearchParams(location.search).get('court') || 'A1',
+    tipo:    mode,
+    data:    selectedDay || '',
+    horario: selectedSlot,
+    preco:   mode === 'avulso' ? '80' : '280',
+  });
+  window.location.href = `pagamento.html?${params}`;
 });
 
 // ── Init ───────────────────────────────────────────────

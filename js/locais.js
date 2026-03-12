@@ -46,14 +46,11 @@ function applyFilters() {
 arenaCards.forEach(card => {
   card.addEventListener('click', () => {
     const name = card.querySelector('strong').textContent;
-    // Em produção: window.location.href = `screen-03-quadras.html?arena=${encodeURIComponent(name)}`;
     card.style.borderColor = 'var(--accent)';
     card.style.background  = 'var(--accent-dim)';
     setTimeout(() => {
-      card.style.borderColor = '';
-      card.style.background  = '';
-    }, 600);
-    console.log('Arena selecionada:', name);
+      window.location.href = `quadras.html?arena=${encodeURIComponent(name)}`;
+    }, 400);
   });
 
   // Acessibilidade — Enter e Space

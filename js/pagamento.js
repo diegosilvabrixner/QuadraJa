@@ -1,5 +1,32 @@
 // screen-05-pagamento.js — QuadraJá · Pagamento
 
+// ── Ler parâmetros da URL ──────────────────────────────
+const params  = new URLSearchParams(location.search);
+const pCourt  = params.get('court')  || 'A1';
+const pTipo   = params.get('tipo')   || 'avulso';
+const pData   = params.get('data')   || '—';
+const pHorario= params.get('horario')|| '—';
+const pPreco  = params.get('preco')  || '80';
+
+// Atualizar resumo no HTML
+const bookingDesc = document.querySelector('.booking-details p');
+const bookingChip = document.querySelector('.booking-details .chip');
+const priceEl     = document.querySelector('.price-total');
+const payBtnText  = () => document.getElementById('payBtn');
+
+if (bookingDesc) bookingDesc.textContent = pData !== '—'
+  ? `${pData} · ${pHorario} – ${addHourStr(pHorario)}`
+  : `${pTipo === 'mensal' ? 'Plano mensal' : 'Avulso'} · ${pHorario}`;
+if (bookingChip) bookingChip.textContent = pTipo === 'mensal' ? 'Mensal' : 'Avulso · 1 hora';
+if (priceEl)     priceEl.textContent = `R$ ${pPreco}`;
+document.querySelectorAll('#payBtn').forEach(b => b.textContent = `Pagar R$ ${pPreco},00 →`);
+
+function addHourStr(t) {
+  if (!t || t === '—') return '—';
+  const [h, m] = t.split(':').map(Number);
+  return `${String(h+1).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
 const paymentOptions = document.querySelectorAll('.payment-option');
 const pixPanel  = document.getElementById('pixPanel');
 const cardPanel = document.getElementById('cardPanel');
@@ -79,11 +106,11 @@ payBtn.addEventListener('click', () => {
   payBtn.style.opacity = '0.7';
 
   setTimeout(() => {
-    // Em produção: verificar webhook do gateway e redirecionar
-    // window.location.href = 'screen-06-confirmacao.html';
     clearInterval(countdown);
     payBtn.textContent = '✓ Pago!';
     payBtn.style.background = 'linear-gradient(135deg,#00E5A0,#00C98A)';
-    console.log('Pagamento realizado → ir para confirmação');
+    setTimeout(() => {
+      window.location.href = `confirmacao.html${location.search}`;
+    }, 600);
   }, 2200);
 });
