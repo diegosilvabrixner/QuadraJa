@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/html/login.html",
+      "permanent": false
+    }
+  ]
+}
