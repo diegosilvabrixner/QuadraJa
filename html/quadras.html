@@ -13,60 +13,18 @@
     <div class="header fade-up">
       <button class="btn-back" onclick="window.location.href='locais.html'">←</button>
       <div class="header-texts">
-        <h2 id="arenaTitle">Arena Centro</h2>
+        <h2 id="arenaTitle">Arena</h2>
         <p>Escolha sua quadra</p>
       </div>
     </div>
 
     <div class="screen">
-      <!-- SVG Floor Plan: 2 linhas × 3 colunas = 6 quadras -->
       <div class="plan-wrap fade-up-1">
         <p class="section-label">Planta da arena</p>
         <div class="floor-plan">
-          <svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg" id="floorPlan">
-            <rect x="2" y="2" width="456" height="196" rx="8" fill="#0D1A2A" stroke="#1E2D42" stroke-width="1.5"/>
-            <!-- A1 -->
-            <g class="court" data-id="A1" data-status="available" tabindex="0">
-              <rect x="10" y="10" width="136" height="84" rx="5" fill="#00E5A0" fill-opacity="0.12" stroke="#00E5A0" stroke-width="1.5"/>
-              <line x1="78" y1="10" x2="78" y2="94" stroke="#00E5A0" stroke-width="1.2" stroke-dasharray="4 3"/>
-              <text x="78" y="54" text-anchor="middle" fill="#00E5A0" font-size="13" font-weight="800" font-family="Outfit,sans-serif">A1</text>
-              <text x="78" y="67" text-anchor="middle" fill="#00E5A0" font-size="8" font-family="Outfit,sans-serif">Areia · Livre</text>
-            </g>
-            <!-- A2 -->
-            <g class="court" data-id="A2" data-status="available" tabindex="0">
-              <rect x="162" y="10" width="136" height="84" rx="5" fill="#00E5A0" fill-opacity="0.12" stroke="#00E5A0" stroke-width="1.5"/>
-              <line x1="230" y1="10" x2="230" y2="94" stroke="#00E5A0" stroke-width="1.2" stroke-dasharray="4 3"/>
-              <text x="230" y="54" text-anchor="middle" fill="#00E5A0" font-size="13" font-weight="800" font-family="Outfit,sans-serif">A2</text>
-              <text x="230" y="67" text-anchor="middle" fill="#00E5A0" font-size="8" font-family="Outfit,sans-serif">Areia · Livre</text>
-            </g>
-            <!-- A3 -->
-            <g class="court" data-id="A3" data-status="available" tabindex="0">
-              <rect x="314" y="10" width="136" height="84" rx="5" fill="#00E5A0" fill-opacity="0.12" stroke="#00E5A0" stroke-width="1.5"/>
-              <line x1="382" y1="10" x2="382" y2="94" stroke="#00E5A0" stroke-width="1.2" stroke-dasharray="4 3"/>
-              <text x="382" y="54" text-anchor="middle" fill="#00E5A0" font-size="13" font-weight="800" font-family="Outfit,sans-serif">A3</text>
-              <text x="382" y="67" text-anchor="middle" fill="#00E5A0" font-size="8" font-family="Outfit,sans-serif">Areia · Livre</text>
-            </g>
-            <!-- B1 -->
-            <g class="court" data-id="B1" data-status="occupied" tabindex="0">
-              <rect x="10" y="108" width="136" height="84" rx="5" fill="#FF6B6B" fill-opacity="0.12" stroke="#FF6B6B" stroke-width="1.5"/>
-              <line x1="78" y1="108" x2="78" y2="192" stroke="#FF6B6B" stroke-width="1.2" stroke-dasharray="4 3"/>
-              <text x="78" y="152" text-anchor="middle" fill="#FF6B6B" font-size="13" font-weight="800" font-family="Outfit,sans-serif">B1</text>
-              <text x="78" y="165" text-anchor="middle" fill="#FF6B6B" font-size="8" font-family="Outfit,sans-serif">Piso · Ocupada</text>
-            </g>
-            <!-- B2 -->
-            <g class="court" data-id="B2" data-status="maintenance" tabindex="0">
-              <rect x="162" y="108" width="136" height="84" rx="5" fill="#4A5E7A" fill-opacity="0.15" stroke="#4A5E7A" stroke-width="1.5"/>
-              <line x1="230" y1="108" x2="230" y2="192" stroke="#4A5E7A" stroke-width="1.2" stroke-dasharray="4 3"/>
-              <text x="230" y="152" text-anchor="middle" fill="#4A5E7A" font-size="13" font-weight="800" font-family="Outfit,sans-serif">B2</text>
-              <text x="230" y="165" text-anchor="middle" fill="#4A5E7A" font-size="8" font-family="Outfit,sans-serif">Manutenção</text>
-            </g>
-            <!-- B3 -->
-            <g class="court" data-id="B3" data-status="available" tabindex="0">
-              <rect x="314" y="108" width="136" height="84" rx="5" fill="#00E5A0" fill-opacity="0.12" stroke="#00E5A0" stroke-width="1.5"/>
-              <line x1="382" y1="108" x2="382" y2="192" stroke="#00E5A0" stroke-width="1.2" stroke-dasharray="4 3"/>
-              <text x="382" y="152" text-anchor="middle" fill="#00E5A0" font-size="13" font-weight="800" font-family="Outfit,sans-serif">B3</text>
-              <text x="382" y="165" text-anchor="middle" fill="#00E5A0" font-size="8" font-family="Outfit,sans-serif">Piso · Livre</text>
-            </g>
+          <!-- SVG populado dinamicamente pelo quadras.js -->
+          <svg id="floorPlan" viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+            <g id="svgCells"></g>
           </svg>
         </div>
         <div class="plan-legend">
@@ -78,65 +36,11 @@
 
       <p class="section-label fade-up-2" style="margin-top:20px">Todas as quadras</p>
       <div class="court-list fade-up-2" id="courtList">
-
-        <div class="court-card" data-id="A1" data-price="80" tabindex="0">
-          <div class="court-card-icon">🏖</div>
-          <div class="court-card-info">
-            <div class="court-card-top"><strong>Quadra A1</strong><span class="chip chip-green">Livre</span></div>
-            <p>Areia · Coberta · até 12 jogadores</p>
-          </div>
-          <div class="court-card-price">R$80<small>/h</small></div>
-        </div>
-
-        <div class="court-card" data-id="A2" data-price="80" tabindex="0">
-          <div class="court-card-icon">🏖</div>
-          <div class="court-card-info">
-            <div class="court-card-top"><strong>Quadra A2</strong><span class="chip chip-green">Livre</span></div>
-            <p>Areia · Descoberta · até 12 jogadores</p>
-          </div>
-          <div class="court-card-price">R$80<small>/h</small></div>
-        </div>
-
-        <div class="court-card" data-id="A3" data-price="80" tabindex="0">
-          <div class="court-card-icon">🏖</div>
-          <div class="court-card-info">
-            <div class="court-card-top"><strong>Quadra A3</strong><span class="chip chip-green">Livre</span></div>
-            <p>Areia · Descoberta · até 12 jogadores</p>
-          </div>
-          <div class="court-card-price">R$80<small>/h</small></div>
-        </div>
-
-        <div class="court-card disabled" data-id="B1" data-price="70">
-          <div class="court-card-icon">🏟</div>
-          <div class="court-card-info">
-            <div class="court-card-top"><strong>Quadra B1</strong><span class="chip chip-red">Ocupada</span></div>
-            <p>Piso · Coberta · próximo horário: 19h</p>
-          </div>
-          <div class="court-card-price muted">R$70<small>/h</small></div>
-        </div>
-
-        <div class="court-card disabled" data-id="B2" data-price="70">
-          <div class="court-card-icon">🏟</div>
-          <div class="court-card-info">
-            <div class="court-card-top"><strong>Quadra B2</strong><span class="chip chip-yellow">Manutenção</span></div>
-            <p>Piso · Descoberta · indisponível no momento</p>
-          </div>
-          <div class="court-card-price muted">R$70<small>/h</small></div>
-        </div>
-
-        <div class="court-card" data-id="B3" data-price="70" tabindex="0">
-          <div class="court-card-icon">🏟</div>
-          <div class="court-card-info">
-            <div class="court-card-top"><strong>Quadra B3</strong><span class="chip chip-green">Livre</span></div>
-            <p>Piso · Coberta · até 12 jogadores</p>
-          </div>
-          <div class="court-card-price">R$70<small>/h</small></div>
-        </div>
-
+        <!-- Populado dinamicamente pelo quadras.js -->
       </div>
     </div>
-  </div>
 
+  </div>
   <script src="../js/quadras.js"></script>
 </body>
 </html>

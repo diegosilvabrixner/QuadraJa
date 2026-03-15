@@ -1,118 +1,89 @@
-/* screen-05-pagamento.css — QuadraJá · Pagamento */
+/* pagamento.css — QuadraJá v2 */
 
-/* Booking summary */
+/* Tela compacta sem scroll desnecessário */
+.pag-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Resumo da reserva */
 .booking-summary {
   background: var(--card);
   border: 1px solid rgba(0,229,160,0.2);
   border-radius: var(--r-xl);
-  padding: 16px;
+  padding: 14px;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 .booking-icon {
-  width: 50px; height: 50px;
+  width: 44px; height: 44px;
   background: var(--accent-dim);
   border-radius: var(--r-md);
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px; flex-shrink: 0;
+  font-size: 22px; flex-shrink: 0;
 }
-.booking-details { flex: 1; }
-.booking-details strong { color: var(--text); font-size: 14px; font-weight: 700; display: block; margin-bottom: 3px; }
-.booking-details p { color: var(--text-muted); font-size: 12px; margin-bottom: 6px; }
-.price-total {
-  color: var(--accent);
-  font-size: 22px;
-  font-weight: 900;
-  white-space: nowrap;
+.booking-details { flex: 1; min-width: 0; }
+.booking-details strong {
+  color: var(--text); font-size: 13px; font-weight: 700;
+  display: block; margin-bottom: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.booking-details p { color: var(--text-muted); font-size: 11px; margin-bottom: 5px; }
+.price-total { color: var(--accent); font-size: 20px; font-weight: 900; white-space: nowrap; flex-shrink: 0; }
 
-/* Payment methods */
-.payment-methods {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-}
+/* Métodos de pagamento */
+.payment-methods { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
 .payment-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: flex; align-items: center; gap: 10px;
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
 .payment-option:hover { border-color: var(--accent); }
-.payment-option.active {
-  border-color: var(--accent);
-  background: var(--accent-dim);
-}
+.payment-option.active { border-color: var(--accent); background: var(--accent-dim); }
 .pm-icon {
-  width: 38px; height: 38px;
+  width: 34px; height: 34px;
   background: var(--surface);
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0;
+  font-size: 16px; flex-shrink: 0;
 }
 .pm-info { flex: 1; }
-.pm-info strong { color: var(--text); font-size: 14px; font-weight: 700; }
-.pm-info p { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+.pm-info strong { color: var(--text); font-size: 13px; font-weight: 700; display: block; }
+.pm-info p { color: var(--text-muted); font-size: 11px; margin-top: 1px; }
 .pm-check {
-  width: 22px; height: 22px;
+  width: 20px; height: 20px;
   border-radius: var(--r-full);
   border: 2px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  color: #000; font-size: 12px; font-weight: 800;
+  color: #000; font-size: 11px; font-weight: 900;
   transition: all 0.2s; flex-shrink: 0;
 }
-.payment-option.active .pm-check {
-  background: var(--gradient);
-  border-color: var(--accent);
-}
+.payment-option.active .pm-check { background: var(--gradient); border-color: var(--accent); }
 
 /* PIX panel */
 .pix-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-.pix-qr {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
+  padding: 16px;
+  margin-bottom: 4px;
 }
-.qr-placeholder {
-  display: flex;
-  justify-content: center;
-  padding: 8px;
-}
-.pix-expire {
-  color: var(--text-muted);
-  font-size: 13px;
-}
-.copy-btn { font-size: 14px; }
+.pix-qr { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pix-expire { color: var(--text-muted); font-size: 12px; }
+.copy-btn { width: 100%; font-size: 13px; }
 
 /* Card panel */
 .card-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 4px;
 }
 
-/* Footer info */
-.pay-info {
-  text-align: center;
-  color: var(--text-dim);
-  font-size: 11px;
-  margin-top: 10px;
-}
+/* Footer */
+.pay-info { text-align: center; color: var(--text-dim); font-size: 11px; margin-top: 8px; }

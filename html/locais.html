@@ -9,128 +9,159 @@
 </head>
 <body>
   <div class="page page-top">
-    <div class="screen">
 
-      <div class="locais-header fade-up">
-        <div>
-          <p class="greeting">Olá, <span id="userName">visitante</span> 👋</p>
-          <h2>Escolha um local</h2>
+    <!-- ── Página principal: Locais ─────────────────── -->
+    <div id="mainList">
+      <div class="screen">
+        <div class="locais-header fade-up">
+          <div>
+            <p class="greeting">Olá, <span id="userName">visitante</span> 👋</p>
+            <h2>Escolha um local</h2>
+          </div>
+          <div class="avatar" id="userAvatar">?</div>
         </div>
-        <div class="avatar" id="userAvatar">?</div>
-      </div>
 
-      <div class="input-wrap search-wrap fade-up-1">
-        <span class="icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Buscar arenas..."/>
-      </div>
+        <div class="input-wrap search-wrap fade-up-1">
+          <span class="icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Buscar arenas..."/>
+        </div>
 
-      <div class="filter-chips fade-up-2" id="filterChips">
-        <button class="fchip active" data-filter="all">Todos</button>
-        <button class="fchip" data-filter="areia">🏖 Areia</button>
-        <button class="fchip" data-filter="piso">🏟 Piso</button>
-        <button class="fchip" data-filter="coberta">🏠 Coberta</button>
-      </div>
+        <div class="filter-chips fade-up-2">
+          <button class="fchip active" data-filter="all">Todos</button>
+          <button class="fchip" data-filter="areia">🏖 Areia</button>
+          <button class="fchip" data-filter="piso">🏟 Piso</button>
+          <button class="fchip" data-filter="coberta">🏠 Coberta</button>
+        </div>
 
-      <p class="section-label fade-up-3" id="countLabel">4 locais encontrados</p>
+        <p class="section-label fade-up-3" id="countLabel">4 locais encontrados</p>
 
-      <div class="arena-list fade-up-3" id="arenaList">
-
-        <div class="arena-card" data-type="areia" data-arena="Arena Centro" data-courts="6" tabindex="0">
-          <div class="arena-image">🏖</div>
-          <div class="arena-info">
-            <div class="arena-row1">
-              <strong>Arena Centro</strong>
-              <span class="chip chip-green">Aberta</span>
+        <div class="arena-list fade-up-3" id="arenaList">
+          <!-- 5. courts reflete a quantidade real de cada arena -->
+          <div class="arena-card" data-type="areia" data-arena="Arena Centro" data-courts="6" tabindex="0">
+            <div class="arena-image">🏖</div>
+            <div class="arena-info">
+              <div class="arena-row1"><strong>Arena Centro</strong><span class="chip chip-green">Aberta</span></div>
+              <p class="arena-addr">📍 Rua das Palmeiras, 240 · 1,2 km</p>
+              <div class="arena-row2">
+                <span class="arena-price">R$80<span>/h</span></span>
+                <span class="arena-rating">⭐ 4.8 <small>(47)</small></span>
+                <span class="arena-courts">🏐 6 quadras</span>
+              </div>
             </div>
-            <p class="arena-addr">📍 Rua das Palmeiras, 240 · 1,2 km</p>
-            <div class="arena-row2">
-              <span class="arena-price">R$80<span>/h</span></span>
-              <span class="arena-rating">⭐ 4.8 <small>(47)</small></span>
-              <span class="arena-courts">🏐 6 quadras</span>
+          </div>
+
+          <div class="arena-card" data-type="piso" data-arena="Arena Norte" data-courts="2" tabindex="0">
+            <div class="arena-image">🏟</div>
+            <div class="arena-info">
+              <div class="arena-row1"><strong>Arena Norte</strong><span class="chip chip-green">Aberta</span></div>
+              <p class="arena-addr">📍 Av. Paulista, 1800 · 2,4 km</p>
+              <div class="arena-row2">
+                <span class="arena-price">R$70<span>/h</span></span>
+                <span class="arena-rating">⭐ 4.6 <small>(31)</small></span>
+                <span class="arena-courts">🏐 2 quadras</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="arena-card" data-type="coberta" data-arena="Arena Coberta Sul" data-courts="4" tabindex="0">
+            <div class="arena-image">🏠</div>
+            <div class="arena-info">
+              <div class="arena-row1"><strong>Arena Coberta Sul</strong><span class="chip chip-yellow">Lotada</span></div>
+              <p class="arena-addr">📍 Rua Augusta, 900 · 3,1 km</p>
+              <div class="arena-row2">
+                <span class="arena-price">R$90<span>/h</span></span>
+                <span class="arena-rating">⭐ 4.9 <small>(88)</small></span>
+                <span class="arena-courts">🏐 4 quadras</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="arena-card" data-type="areia" data-arena="Beach Sport Lapa" data-courts="3" tabindex="0">
+            <div class="arena-image">🏖</div>
+            <div class="arena-info">
+              <div class="arena-row1"><strong>Beach Sport Lapa</strong><span class="chip chip-green">Aberta</span></div>
+              <p class="arena-addr">📍 Largo da Lapa, 12 · 4,7 km</p>
+              <div class="arena-row2">
+                <span class="arena-price">R$75<span>/h</span></span>
+                <span class="arena-rating">⭐ 4.7 <small>(22)</small></span>
+                <span class="arena-courts">🏐 3 quadras</span>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="arena-card" data-type="piso" data-arena="Arena Norte" data-courts="2" tabindex="0">
-          <div class="arena-image">🏟</div>
-          <div class="arena-info">
-            <div class="arena-row1">
-              <strong>Arena Norte</strong>
-              <span class="chip chip-green">Aberta</span>
-            </div>
-            <p class="arena-addr">📍 Av. Paulista, 1800 · 2,4 km</p>
-            <div class="arena-row2">
-              <span class="arena-price">R$70<span>/h</span></span>
-              <span class="arena-rating">⭐ 4.6 <small>(31)</small></span>
-              <span class="arena-courts">🏐 2 quadras</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="arena-card" data-type="coberta" data-arena="Arena Coberta Sul" data-courts="6" tabindex="0">
-          <div class="arena-image">🏠</div>
-          <div class="arena-info">
-            <div class="arena-row1">
-              <strong>Arena Coberta Sul</strong>
-              <span class="chip chip-yellow">Lotada</span>
-            </div>
-            <p class="arena-addr">📍 Rua Augusta, 900 · 3,1 km</p>
-            <div class="arena-row2">
-              <span class="arena-price">R$90<span>/h</span></span>
-              <span class="arena-rating">⭐ 4.9 <small>(88)</small></span>
-              <span class="arena-courts">🏐 6 quadras</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="arena-card" data-type="areia" data-arena="Beach Sport Lapa" data-courts="3" tabindex="0">
-          <div class="arena-image">🏖</div>
-          <div class="arena-info">
-            <div class="arena-row1">
-              <strong>Beach Sport Lapa</strong>
-              <span class="chip chip-green">Aberta</span>
-            </div>
-            <p class="arena-addr">📍 Largo da Lapa, 12 · 4,7 km</p>
-            <div class="arena-row2">
-              <span class="arena-price">R$75<span>/h</span></span>
-              <span class="arena-rating">⭐ 4.7 <small>(22)</small></span>
-              <span class="arena-courts">🏐 3 quadras</span>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
 
-    <!-- Telas extras da nav -->
-    <div id="pageReservas"  class="extra-page" style="display:none">
-      <div class="screen">
-        <h2 style="margin-bottom:16px">Minhas Reservas</h2>
+    <!-- ── 3. Página: Reservas ───────────────────────── -->
+    <div id="pageReservas" style="display:none">
+      <div class="subpage-header">
+        <button class="btn-back" onclick="showPage('locais')">←</button>
+        <h2>Minhas Reservas</h2>
+      </div>
+      <div class="screen" style="padding-top:8px">
         <div id="reservasList"></div>
       </div>
     </div>
 
-    <div id="pageFavoritos" class="extra-page" style="display:none">
-      <div class="screen">
-        <h2 style="margin-bottom:16px">Favoritos</h2>
+    <!-- ── 3. Página: Favoritos ──────────────────────── -->
+    <div id="pageFavoritos" style="display:none">
+      <div class="subpage-header">
+        <button class="btn-back" onclick="showPage('locais')">←</button>
+        <h2>Favoritos</h2>
+      </div>
+      <div class="screen" style="padding-top:8px">
         <div id="favoritosList"></div>
       </div>
     </div>
 
-    <div id="pagePerfil" class="extra-page" style="display:none">
-      <div class="screen">
-        <h2 style="margin-bottom:16px">Meu Perfil</h2>
-        <div class="card" style="display:flex;gap:16px;align-items:center;margin-bottom:16px">
+    <!-- ── 3. Página: Perfil ─────────────────────────── -->
+    <div id="pagePerfil" style="display:none">
+      <div class="subpage-header">
+        <button class="btn-back" onclick="showPage('locais')">←</button>
+        <h2>Meu Perfil</h2>
+      </div>
+      <div class="screen" style="padding-top:8px">
+        <!-- Card perfil com dados -->
+        <div class="card" style="display:flex;gap:16px;align-items:center;margin-bottom:20px" id="perfilComConta">
           <div class="avatar-lg" id="perfilAvatar">?</div>
-          <div>
-            <strong id="perfilNome" style="font-size:17px"></strong>
-            <p id="perfilEmail" style="color:var(--text-muted);font-size:13px;margin-top:3px"></p>
+          <div style="flex:1;min-width:0">
+            <strong id="perfilNome" style="font-size:17px;display:block"></strong>
+            <p id="perfilEmail" style="color:var(--text-muted);font-size:13px;margin-top:3px;
+               overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></p>
           </div>
         </div>
-        <button class="btn-secondary" onclick="logout()">Sair da conta</button>
+
+        <!-- Stats rápidas -->
+        <div id="perfilComConta2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+          <div class="card" style="text-align:center">
+            <div id="perfilReservasCount" style="font-size:28px;font-weight:900;color:var(--accent)">0</div>
+            <p style="color:var(--text-muted);font-size:12px;margin-top:4px">reservas feitas</p>
+          </div>
+          <div class="card" style="text-align:center">
+            <div style="font-size:28px;font-weight:900;color:var(--accent)">0</div>
+            <p style="color:var(--text-muted);font-size:12px;margin-top:4px">favoritos</p>
+          </div>
+        </div>
+
+        <!-- Sem conta -->
+        <div id="perfilSemConta" class="empty-state" style="display:none">
+          <span class="empty-icon">👤</span>
+          <h3>Você não está logado</h3>
+          <p>Faça login ou crie uma conta para ver seu perfil.</p>
+          <button class="btn-primary" style="max-width:240px;margin-top:8px"
+                  onclick="window.location.href='login.html'">
+            Fazer login
+          </button>
+        </div>
+
+        <button class="btn-secondary" id="perfilComConta3" onclick="logout()"
+                style="margin-top:4px">
+          Sair da conta
+        </button>
       </div>
     </div>
 
+    <!-- Bottom Nav -->
     <nav class="bottom-nav">
       <button class="nav-item active" data-page="locais">
         <span class="nav-icon">🏟</span>Locais
@@ -145,8 +176,8 @@
         <span class="nav-icon">👤</span>Perfil
       </button>
     </nav>
-  </div>
 
+  </div>
   <script src="../js/locais.js"></script>
 </body>
 </html>
