@@ -8,31 +8,22 @@
   <link rel="stylesheet" href="../css/locais.css"/>
 </head>
 <body>
-  <div class="phone">
-    <div class="status-bar">
-      <span>9:41</span>
-      <span>●●● 📶</span>
-      <span>98%🔋</span>
-    </div>
-
+  <div class="page page-top">
     <div class="screen">
-      <!-- Header -->
+
       <div class="locais-header fade-up">
         <div>
-          <p class="greeting">Olá, Lucas 👋</p>
+          <p class="greeting">Olá, <span id="userName">visitante</span> 👋</p>
           <h2>Escolha um local</h2>
         </div>
-        <div class="avatar">L</div>
+        <div class="avatar" id="userAvatar">?</div>
       </div>
 
-      <!-- Search -->
       <div class="input-wrap search-wrap fade-up-1">
         <span class="icon">🔍</span>
         <input type="text" id="searchInput" placeholder="Buscar arenas..."/>
-        <button class="filter-btn" id="filterBtn">⚡</button>
       </div>
 
-      <!-- Filter chips -->
       <div class="filter-chips fade-up-2" id="filterChips">
         <button class="fchip active" data-filter="all">Todos</button>
         <button class="fchip" data-filter="areia">🏖 Areia</button>
@@ -40,13 +31,11 @@
         <button class="fchip" data-filter="coberta">🏠 Coberta</button>
       </div>
 
-      <!-- Section label -->
-      <p class="section-label fade-up-3">4 locais encontrados</p>
+      <p class="section-label fade-up-3" id="countLabel">4 locais encontrados</p>
 
-      <!-- Arena list -->
       <div class="arena-list fade-up-3" id="arenaList">
 
-        <div class="arena-card" data-type="areia" tabindex="0">
+        <div class="arena-card" data-type="areia" data-arena="Arena Centro" data-courts="6" tabindex="0">
           <div class="arena-image">🏖</div>
           <div class="arena-info">
             <div class="arena-row1">
@@ -57,12 +46,12 @@
             <div class="arena-row2">
               <span class="arena-price">R$80<span>/h</span></span>
               <span class="arena-rating">⭐ 4.8 <small>(47)</small></span>
-              <span class="arena-courts">🏐 4 quadras</span>
+              <span class="arena-courts">🏐 6 quadras</span>
             </div>
           </div>
         </div>
 
-        <div class="arena-card" data-type="piso" tabindex="0">
+        <div class="arena-card" data-type="piso" data-arena="Arena Norte" data-courts="2" tabindex="0">
           <div class="arena-image">🏟</div>
           <div class="arena-info">
             <div class="arena-row1">
@@ -78,7 +67,7 @@
           </div>
         </div>
 
-        <div class="arena-card" data-type="coberta" tabindex="0">
+        <div class="arena-card" data-type="coberta" data-arena="Arena Coberta Sul" data-courts="6" tabindex="0">
           <div class="arena-image">🏠</div>
           <div class="arena-info">
             <div class="arena-row1">
@@ -94,7 +83,7 @@
           </div>
         </div>
 
-        <div class="arena-card" data-type="areia" tabindex="0">
+        <div class="arena-card" data-type="areia" data-arena="Beach Sport Lapa" data-courts="3" tabindex="0">
           <div class="arena-image">🏖</div>
           <div class="arena-info">
             <div class="arena-row1">
@@ -113,18 +102,46 @@
       </div>
     </div>
 
-    <!-- Bottom Nav -->
+    <!-- Telas extras da nav -->
+    <div id="pageReservas"  class="extra-page" style="display:none">
+      <div class="screen">
+        <h2 style="margin-bottom:16px">Minhas Reservas</h2>
+        <div id="reservasList"></div>
+      </div>
+    </div>
+
+    <div id="pageFavoritos" class="extra-page" style="display:none">
+      <div class="screen">
+        <h2 style="margin-bottom:16px">Favoritos</h2>
+        <div id="favoritosList"></div>
+      </div>
+    </div>
+
+    <div id="pagePerfil" class="extra-page" style="display:none">
+      <div class="screen">
+        <h2 style="margin-bottom:16px">Meu Perfil</h2>
+        <div class="card" style="display:flex;gap:16px;align-items:center;margin-bottom:16px">
+          <div class="avatar-lg" id="perfilAvatar">?</div>
+          <div>
+            <strong id="perfilNome" style="font-size:17px"></strong>
+            <p id="perfilEmail" style="color:var(--text-muted);font-size:13px;margin-top:3px"></p>
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="logout()">Sair da conta</button>
+      </div>
+    </div>
+
     <nav class="bottom-nav">
-      <button class="nav-item active">
+      <button class="nav-item active" data-page="locais">
         <span class="nav-icon">🏟</span>Locais
       </button>
-      <button class="nav-item">
+      <button class="nav-item" data-page="reservas">
         <span class="nav-icon">📅</span>Reservas
       </button>
-      <button class="nav-item">
+      <button class="nav-item" data-page="favoritos">
         <span class="nav-icon">🏆</span>Favoritos
       </button>
-      <button class="nav-item">
+      <button class="nav-item" data-page="perfil">
         <span class="nav-icon">👤</span>Perfil
       </button>
     </nav>

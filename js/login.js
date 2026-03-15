@@ -1,122 +1,103 @@
-// ═══════════════════════════════════════════════════
-// screen-01-login.js — QuadraJá
-// Tela: Login — Lógica e interações
-// ═══════════════════════════════════════════════════
+// login.js — QuadraJá v2
 
-const emailInput    = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const loginBtn      = document.getElementById('loginBtn');
-const loginForm     = document.getElementById('loginForm');
-const togglePwBtn   = document.getElementById('togglePw');
-const googleBtn     = document.getElementById('googleBtn');
-const appleBtn      = document.getElementById('appleBtn');
+const form        = document.getElementById('loginForm');
+const emailInput  = document.getElementById('email');
+const pwInput     = document.getElementById('password');
+const emailWrap   = document.getElementById('emailWrap');
+const pwWrap      = document.getElementById('passwordWrap');
+const emailErr    = document.getElementById('emailError');
+const pwErr       = document.getElementById('passwordError');
+const loginBtn    = document.getElementById('loginBtn');
+const togglePw    = document.getElementById('togglePw');
+const googleBtn   = document.getElementById('googleBtn');
+const appleBtn    = document.getElementById('appleBtn');
 
-// ── Toggle mostrar senha ─────────────────────────────
-togglePwBtn.addEventListener('click', () => {
-  const isPassword = passwordInput.type === 'password';
-  passwordInput.type = isPassword ? 'text' : 'password';
-  togglePwBtn.textContent = isPassword ? '🙈' : '👁';
+// ── Toggle senha ──────────────────────────────────────
+togglePw.addEventListener('click', () => {
+  const show = pwInput.type === 'password';
+  pwInput.type       = show ? 'text' : 'password';
+  togglePw.textContent = show ? '🙈' : '👁';
 });
 
-// ── Validação em tempo real ───────────────────────────
-function isEmailValid(val) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-}
+// ── Limpa erro ao digitar ─────────────────────────────
+emailInput.addEventListener('input', () => clearError(emailWrap, emailErr));
+pwInput.addEventListener('input',    () => clearError(pwWrap, pwErr));
 
-function updateLoginBtn() {
-  const ready = isEmailValid(emailInput.value) && passwordInput.value.length >= 6;
-  loginBtn.style.opacity  = ready ? '1' : '0.5';
-  loginBtn.style.cursor   = ready ? 'pointer' : 'default';
-  loginBtn.disabled       = !ready;
-}
-
-emailInput.addEventListener('input', updateLoginBtn);
-passwordInput.addEventListener('input', updateLoginBtn);
-updateLoginBtn(); // estado inicial
-
-// Highlight input wrap ao focar
-document.querySelectorAll('.input-wrap input').forEach(input => {
-  input.addEventListener('focus', () => {
-    input.closest('.input-wrap').style.borderColor = 'var(--accent)';
+// ── Focus highlight ───────────────────────────────────
+[emailInput, pwInput].forEach(inp => {
+  inp.addEventListener('focus', () => {
+    if (!inp.closest('.input-wrap').classList.contains('error'))
+      inp.closest('.input-wrap').style.borderColor = 'var(--accent)';
   });
-  input.addEventListener('blur', () => {
-    input.closest('.input-wrap').style.borderColor = 'var(--border)';
+  inp.addEventListener('blur', () => {
+    if (!inp.closest('.input-wrap').classList.contains('error'))
+      inp.closest('.input-wrap').style.borderColor = '';
   });
 });
+
+// ── Validação ─────────────────────────────────────────
+function isEmailValid(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
+
+function showError(wrap, errEl, msg) {
+  wrap.classList.add('error');
+  wrap.style.animation = 'shake 0.35s ease';
+  wrap.style.borderColor = 'var(--red)';
+  errEl.innerHTML = '⚠ ' + msg;
+  errEl.style.display = 'flex';
+  setTimeout(() => { wrap.style.animation = ''; }, 400);
+}
+
+function clearError(wrap, errEl) {
+  wrap.classList.remove('error');
+  wrap.style.borderColor = '';
+  errEl.style.display = 'none';
+}
 
 // ── Submit ────────────────────────────────────────────
-loginForm.addEventListener('submit', (e) => {
+form.addEventListener('submit', e => {
   e.preventDefault();
+  let valid = true;
 
-  if (!isEmailValid(emailInput.value)) {
-    showError(emailInput, 'E-mail inválido');
-    return;
-  }
-  if (passwordInput.value.length < 6) {
-    showError(passwordInput, 'Senha muito curta');
-    return;
+  // Valida e-mail
+  if (!emailInput.value.trim()) {
+    showError(emailWrap, emailErr, 'O e-mail é obrigatório');
+    valid = false;
+  } else if (!isEmailValid(emailInput.value)) {
+    showError(emailWrap, emailErr, 'Digite um e-mail válido (ex: nome@email.com)');
+    valid = false;
   }
 
-  // Simula loading
+  // Valida senha
+  if (!pwInput.value) {
+    showError(pwWrap, pwErr, 'A senha é obrigatória');
+    valid = false;
+  } else if (pwInput.value.length < 6) {
+    showError(pwWrap, pwErr, 'A senha precisa ter pelo menos 6 caracteres');
+    valid = false;
+  }
+
+  if (!valid) return;
+
+  // Loading
+  loginBtn.disabled = true;
   loginBtn.classList.add('loading');
-  loginBtn.textContent = 'Entrando...';
+  loginBtn.textContent = 'Entrando';
 
   setTimeout(() => {
-    showSuccess();
-    setTimeout(() => {
-      window.location.href = 'locais.html';
-    }, 800);
-  }, 1800);
+    loginBtn.textContent = '✓ Entrando!';
+    loginBtn.style.background = 'linear-gradient(135deg,#00E5A0,#00C98A)';
+    setTimeout(() => { window.location.href = 'locais.html'; }, 600);
+  }, 1400);
 });
 
 // ── OAuth ─────────────────────────────────────────────
 googleBtn.addEventListener('click', () => {
-  googleBtn.textContent = '⏳ Conectando...';
-  setTimeout(() => { googleBtn.innerHTML = '<img src="..." width="20"/> Google'; }, 2000);
+  googleBtn.textContent = '⏳ Aguarde...';
+  googleBtn.disabled = true;
+  setTimeout(() => { window.location.href = 'locais.html'; }, 1000);
 });
 appleBtn.addEventListener('click', () => {
-  appleBtn.textContent = '⏳ Conectando...';
-  setTimeout(() => { appleBtn.textContent = '🍎 Apple'; }, 2000);
+  appleBtn.textContent = '⏳ Aguarde...';
+  appleBtn.disabled = true;
+  setTimeout(() => { window.location.href = 'locais.html'; }, 1000);
 });
-
-// ── Helpers ───────────────────────────────────────────
-function showError(inputEl, message) {
-  const wrap = inputEl.closest('.input-wrap');
-  wrap.style.borderColor = 'var(--red)';
-  wrap.style.animation   = 'shake 0.3s ease';
-
-  let errEl = wrap.parentElement.querySelector('.err-msg');
-  if (!errEl) {
-    errEl = document.createElement('span');
-    errEl.className = 'err-msg';
-    errEl.style.cssText = 'color:var(--red);font-size:12px;margin-top:4px;display:block;';
-    wrap.after(errEl);
-  }
-  errEl.textContent = '⚠ ' + message;
-
-  inputEl.addEventListener('input', () => {
-    wrap.style.borderColor = 'var(--border)';
-    wrap.style.animation   = '';
-    if (errEl) errEl.remove();
-  }, { once: true });
-}
-
-function showSuccess() {
-  loginBtn.style.background = 'linear-gradient(135deg, #00E5A0, #00C98A)';
-  loginBtn.textContent = '✓ Bem-vindo!';
-  setTimeout(() => {
-    loginBtn.style.background = '';
-    loginBtn.textContent = 'Entrar';
-  }, 2000);
-}
-
-// Animação shake (inline para evitar dependência de CSS extra)
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    20%,60%  { transform: translateX(-6px); }
-    40%,80%  { transform: translateX(6px); }
-  }
-`;
-document.head.appendChild(style);
