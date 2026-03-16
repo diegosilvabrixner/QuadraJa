@@ -1,12 +1,12 @@
 // locais.js — QuadraJá v2
 
-// ── 1. Limpa seleção visual ao entrar/voltar para a tela ──
-// pageshow cobre tanto navegação normal quanto o cache do botão voltar (bfcache)
+// ── 1. Limpa seleção ao voltar (bfcache / botão nativo) ──
 window.addEventListener('pageshow', () => {
   document.querySelectorAll('.arena-card').forEach(c => {
     c.style.borderColor = '';
     c.style.background  = '';
   });
+  renderFavStars(); // atualiza estrelas ao voltar
 });
 
 // ── Usuário ───────────────────────────────────────────
@@ -14,6 +14,55 @@ const nome  = localStorage.getItem('qj_user_name')  || 'visitante';
 const email = localStorage.getItem('qj_user_email') || '';
 document.getElementById('userName').textContent   = nome;
 document.getElementById('userAvatar').textContent = nome[0].toUpperCase();
+
+// ── Favoritos helpers ─────────────────────────────────
+function getFavs() { return JSON.parse(localStorage.getItem('qj_favoritos') || '[]'); }
+function saveFavs(f) { localStorage.setItem('qj_favoritos', JSON.stringify(f)); }
+
+function toggleFav(arenaName, btn) {
+  let favs = getFavs();
+  const idx = favs.indexOf(arenaName);
+  if (idx === -1) {
+    favs.push(arenaName);
+    btn.textContent = '⭐';
+    btn.title = 'Remover dos favoritos';
+  } else {
+    favs.splice(idx, 1);
+    btn.textContent = '☆';
+    btn.title = 'Adicionar aos favoritos';
+  }
+  saveFavs(favs);
+}
+
+function renderFavStars() {
+  const favs = getFavs();
+  document.querySelectorAll('.fav-btn').forEach(btn => {
+    const name = btn.dataset.arena;
+    btn.textContent = favs.includes(name) ? '⭐' : '☆';
+    btn.title = favs.includes(name) ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
+  });
+}
+
+// Injeta botão de favorito em cada card
+document.querySelectorAll('.arena-card').forEach(card => {
+  const arenaName = card.dataset.arena;
+  const favs      = getFavs();
+
+  const btn = document.createElement('button');
+  btn.className    = 'fav-btn';
+  btn.dataset.arena = arenaName;
+  btn.textContent  = favs.includes(arenaName) ? '⭐' : '☆';
+  btn.title        = favs.includes(arenaName) ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
+
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleFav(arenaName, btn);
+  });
+
+  // Insere na .arena-row1, depois do chip de status
+  const row1 = card.querySelector('.arena-row1');
+  if (row1) row1.appendChild(btn);
+});
 
 // ── Busca e filtros ───────────────────────────────────
 const searchInput = document.getElementById('searchInput');
@@ -38,11 +87,11 @@ function applyFilters() {
   arenaCards.forEach(card => {
     const name = card.querySelector('strong').textContent.toLowerCase();
     const type = card.dataset.type;
-    const ok = name.includes(query) && (currentFilter === 'all' || type === currentFilter);
+    const ok   = name.includes(query) && (currentFilter === 'all' || type === currentFilter);
     card.classList.toggle('hidden', !ok);
     if (ok) visible++;
   });
-  countLabel.textContent = `${visible} ${visible===1?'local encontrado':'locais encontrados'}`;
+  countLabel.textContent = `${visible} ${visible === 1 ? 'local encontrado' : 'locais encontrados'}`;
 }
 
 // ── Navegar para quadras ──────────────────────────────
@@ -57,12 +106,12 @@ arenaCards.forEach(card => {
     }, 300);
   });
   card.addEventListener('keydown', e => {
-    if (e.key==='Enter'||e.key===' ') { e.preventDefault(); card.click(); }
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
   });
 });
 
 // ── Bottom Nav ────────────────────────────────────────
-const mainList  = document.getElementById('mainList');
+const mainList   = document.getElementById('mainList');
 const pReservas  = document.getElementById('pageReservas');
 const pFavoritos = document.getElementById('pageFavoritos');
 const pPerfil    = document.getElementById('pagePerfil');
@@ -71,20 +120,87 @@ function showPage(name) {
   [mainList, pReservas, pFavoritos, pPerfil].forEach(p => p && (p.style.display = 'none'));
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.querySelector(`.nav-item[data-page="${name}"]`).classList.add('active');
-
   switch (name) {
-    case 'locais':    mainList.style.display = ''; break;
+    case 'locais':    mainList.style.display   = ''; break;
     case 'reservas':  pReservas.style.display  = ''; renderReservas();  break;
     case 'favoritos': pFavoritos.style.display = ''; renderFavoritos(); break;
     case 'perfil':    pPerfil.style.display    = ''; renderPerfil();    break;
   }
 }
-
 document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => showPage(btn.dataset.page));
 });
 
-// ── 3. Renderizar reservas ────────────────────────────
+// ── CANCELAMENTO ─────────────────────────────────────
+function cancelarReserva(idx) {
+  const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
+  const r        = reservas[idx];
+  if (!r) return;
+
+  // Calcula horas até o início da reserva
+  const horasFaltando = horasAteReserva(r);
+  const semEstorno    = horasFaltando !== null && horasFaltando < 4;
+
+  const modal = document.getElementById('modalCancelamento');
+  document.getElementById('cancelArena').textContent   = `${r.arena} · Quadra ${r.court}`;
+  document.getElementById('cancelData').textContent    = r.data !== '—' ? r.data : 'Plano mensal';
+  document.getElementById('cancelHorario').textContent = r.horarios;
+  document.getElementById('cancelPreco').textContent   = `R$ ${r.preco}`;
+
+  const avisoEstorno = document.getElementById('avisoSemEstorno');
+  const btnConfirmar = document.getElementById('btnConfirmarCancelamento');
+
+  const avisoComEstorno = document.getElementById('avisoComEstorno');
+  if (semEstorno) {
+    avisoEstorno.style.display    = '';
+    avisoComEstorno.style.display = 'none';
+    document.getElementById('cancelHorasFaltando').textContent =
+      horasFaltando < 1
+        ? 'menos de 1 hora'
+        : `${Math.floor(horasFaltando)}h${Math.round((horasFaltando % 1) * 60) > 0 ? Math.round((horasFaltando % 1) * 60) + 'min' : ''}`;
+    btnConfirmar.textContent = 'Cancelar mesmo assim (sem estorno)';
+    btnConfirmar.style.background = 'var(--red)';
+    btnConfirmar.style.color = '#fff';
+  } else {
+    avisoEstorno.style.display    = 'none';
+    avisoComEstorno.style.display = '';
+    btnConfirmar.textContent = 'Confirmar cancelamento (com estorno)';
+    btnConfirmar.style.background = '';
+    btnConfirmar.style.color = '';
+  }
+
+  modal.classList.add('open');
+  modal._reservaIdx = idx;
+  document.body.style.overflow = 'hidden';
+}
+
+function horasAteReserva(r) {
+  if (!r.data || r.data === '—') return null;
+  const [d, m, y] = r.data.split('/').map(Number);
+  const primeiroSlot = (r.horariosList || [])[0];
+  if (!primeiroSlot) return null;
+  const [h, min] = primeiroSlot.split(':').map(Number);
+  const reservaDate = new Date(y, m - 1, d, h, min);
+  return (reservaDate - new Date()) / (1000 * 60 * 60);
+}
+
+function fecharModalCancelamento() {
+  document.getElementById('modalCancelamento').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function confirmarCancelamento() {
+  const modal = document.getElementById('modalCancelamento');
+  const idx   = modal._reservaIdx;
+  const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
+  reservas.splice(idx, 1);
+  localStorage.setItem('qj_reservas', JSON.stringify(reservas));
+  fecharModalCancelamento();
+  renderReservas();
+  showToast('Reserva cancelada com sucesso', 'success');
+}
+
+// ── Renderizar reservas ────────────────────────────────
 function renderReservas() {
   const list    = document.getElementById('reservasList');
   const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
@@ -102,59 +218,104 @@ function renderReservas() {
     return;
   }
 
-  list.innerHTML = reservas.slice().reverse().map(r => `
-    <div class="card" style="margin-bottom:12px;display:flex;gap:12px;align-items:flex-start">
-      <div style="width:42px;height:42px;background:var(--accent-dim);border-radius:var(--r-md);
-                  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏐</div>
-      <div style="flex:1;min-width:0">
-        <strong style="font-size:14px;display:block">${r.arena} · Quadra ${r.court}</strong>
-        <p style="color:var(--text-muted);font-size:12px;margin-top:3px;
-                  white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-          ${r.data !== '—' ? r.data + ' · ' : ''}${r.horarios}
-        </p>
-        <div style="margin-top:6px"><span class="chip chip-green">✓ Confirmada</span></div>
+  list.innerHTML = reservas.slice().reverse().map((r, i) => {
+    const realIdx = reservas.length - 1 - i; // índice real (invertido)
+    const horas   = horasAteReserva(r);
+    const passada = horas !== null && horas < 0;
+    const chipClass = passada ? 'chip-yellow' : 'chip-green';
+    const chipText  = passada ? 'Concluída' : '✓ Confirmada';
+
+    return `
+    <div class="card reserva-card" style="margin-bottom:12px">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:42px;height:42px;background:var(--accent-dim);border-radius:var(--r-md);
+                    display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏐</div>
+        <div style="flex:1;min-width:0">
+          <strong style="font-size:14px;display:block">${r.arena} · Quadra ${r.court}</strong>
+          <p style="color:var(--text-muted);font-size:12px;margin-top:3px">
+            ${r.data !== '—' ? r.data + ' · ' : ''}${r.horarios}
+          </p>
+          <div style="margin-top:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+            <span class="chip ${chipClass}">${chipText}</span>
+            <strong style="color:var(--accent);font-size:15px">R$${r.preco}</strong>
+          </div>
+        </div>
       </div>
-      <strong style="color:var(--accent);font-size:15px;white-space:nowrap;flex-shrink:0">
-        R$${r.preco}
-      </strong>
-    </div>`).join('');
+      ${!passada ? `
+      <button class="btn-cancelar" onclick="cancelarReserva(${realIdx})">
+        Cancelar reserva
+      </button>` : ''}
+    </div>`;
+  }).join('');
 }
 
-// ── 3. Renderizar favoritos ───────────────────────────
+// ── Renderizar favoritos ──────────────────────────────
 function renderFavoritos() {
   const list = document.getElementById('favoritosList');
-  const favs = JSON.parse(localStorage.getItem('qj_favoritos') || '[]');
+  const favs = getFavs();
 
   if (!favs.length) {
     list.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">🏆</span>
+        <span class="empty-icon">⭐</span>
         <h3>Nenhum favorito ainda</h3>
-        <p>Quando você favoritar uma arena ela vai aparecer aqui.</p>
+        <p>Toque na estrela ☆ em qualquer arena para salvá-la aqui.</p>
         <button class="btn-primary" style="max-width:240px;margin-top:8px" onclick="showPage('locais')">
           Explorar arenas
         </button>
       </div>`;
     return;
   }
-  list.innerHTML = favs.map(f => `
-    <div class="card" style="margin-bottom:12px"><strong>${f}</strong></div>`).join('');
+
+  // Busca dados do card para montar o card de favorito
+  list.innerHTML = favs.map(name => {
+    const card = document.querySelector(`.arena-card[data-arena="${name}"]`);
+    if (!card) return `<div class="card" style="margin-bottom:12px"><strong>${name}</strong></div>`;
+    const chip  = card.querySelector('.chip')?.outerHTML || '';
+    const addr  = card.querySelector('.arena-addr')?.textContent || '';
+    const price = card.querySelector('.arena-price')?.textContent || '';
+    const icon  = card.querySelector('.arena-image')?.textContent || '🏟';
+    return `
+      <div class="arena-card" style="margin-bottom:12px;cursor:pointer"
+           onclick="window.location.href='quadras.html?arena=${encodeURIComponent(name)}&courts=${card.dataset.courts}'">
+        <div class="arena-image">${icon}</div>
+        <div class="arena-info">
+          <div class="arena-row1"><strong>${name}</strong>${chip}</div>
+          <p class="arena-addr">${addr}</p>
+          <div class="arena-row2"><span class="arena-price">${price}</span></div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
-// ── 3. Renderizar perfil ──────────────────────────────
+// ── Renderizar perfil ─────────────────────────────────
 function renderPerfil() {
-  const n = localStorage.getItem('qj_user_name')  || '';
-  const e = localStorage.getItem('qj_user_email') || '';
+  const n        = localStorage.getItem('qj_user_name')  || '';
+  const e        = localStorage.getItem('qj_user_email') || '';
   const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
-
-  document.getElementById('perfilNome').textContent   = n || 'Visitante';
-  document.getElementById('perfilEmail').textContent  = e || 'E-mail não informado';
-  document.getElementById('perfilAvatar').textContent = (n || 'V')[0].toUpperCase();
-  document.getElementById('perfilReservasCount').textContent = reservas.length;
-
   const semConta = !n && !e;
-  document.getElementById('perfilSemConta').style.display = semConta ? '' : 'none';
-  document.getElementById('perfilComConta').style.display = semConta ? 'none' : '';
+
+  document.getElementById('perfilNome').textContent           = n || 'Visitante';
+  document.getElementById('perfilEmail').textContent          = e || 'E-mail não informado';
+  document.getElementById('perfilAvatar').textContent         = (n || 'V')[0].toUpperCase();
+  document.getElementById('perfilReservasCount').textContent  = reservas.length;
+  document.getElementById('perfilSemConta').style.display     = semConta ? '' : 'none';
+  document.getElementById('perfilComConta').style.display     = semConta ? 'none' : '';
+}
+
+// ── Toast ─────────────────────────────────────────────
+function showToast(msg, type = '') {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.className   = `toast ${type}`;
+  setTimeout(() => toast.classList.add('show'), 10);
+  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 // ── Logout ────────────────────────────────────────────
@@ -163,5 +324,9 @@ function logout() {
   localStorage.removeItem('qj_user_email');
   window.location.href = 'login.html';
 }
-window.logout    = logout;
-window.showPage  = showPage;
+
+window.logout                  = logout;
+window.showPage                = showPage;
+window.cancelarReserva         = cancelarReserva;
+window.fecharModalCancelamento = fecharModalCancelamento;
+window.confirmarCancelamento   = confirmarCancelamento;

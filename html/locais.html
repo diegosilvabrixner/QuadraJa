@@ -178,6 +178,50 @@
     </nav>
 
   </div>
+
+  <!-- Modal cancelamento -->
+  <div class="modal-overlay" id="modalCancelamento">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Cancelar reserva</h3>
+        <button class="modal-close" onclick="fecharModalCancelamento()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="cancel-detail-row"><span>Arena</span><strong id="cancelArena"></strong></div>
+        <div class="cancel-detail-row"><span>Data</span><strong id="cancelData"></strong></div>
+        <div class="cancel-detail-row"><span>Horário</span><strong id="cancelHorario"></strong></div>
+        <div class="cancel-detail-row"><span>Valor pago</span><strong id="cancelPreco" style="color:var(--accent)"></strong></div>
+
+        <!-- Aviso sem estorno (aparece só quando < 4h) -->
+        <div id="avisoSemEstorno" class="aviso-sem-estorno" style="display:none">
+          <div class="aviso-icon">⚠️</div>
+          <div>
+            <strong>Cancelamento sem estorno</strong>
+            <p>Sua reserva começa em <strong id="cancelHorasFaltando"></strong>. Como faltam menos de 4 horas, o valor pago <strong>não será reembolsado</strong> conforme nossa política de cancelamento.</p>
+          </div>
+        </div>
+
+        <!-- Aviso com estorno -->
+        <div id="avisoComEstorno" class="aviso-com-estorno">
+          <div class="aviso-icon">✅</div>
+          <div>
+            <strong>Estorno disponível</strong>
+            <p>Seu pagamento será estornado integralmente em até <strong>5 dias úteis</strong> no método original.</p>
+          </div>
+        </div>
+
+        <p style="color:var(--text-muted);font-size:12px;margin-top:12px">
+          Ao confirmar, a quadra volta a ficar disponível para outros clientes.
+        </p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:0 16px 20px">
+        <button class="btn-primary" id="btnConfirmarCancelamento" onclick="confirmarCancelamento()">
+          Confirmar cancelamento
+        </button>
+        <button class="btn-secondary" onclick="fecharModalCancelamento()">Manter reserva</button>
+      </div>
+    </div>
+  </div>
   <script src="../js/locais.js"></script>
 </body>
 </html>

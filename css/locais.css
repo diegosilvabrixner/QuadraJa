@@ -107,3 +107,96 @@
 .empty-icon { font-size: 52px; line-height: 1; }
 .empty-state h3 { color: var(--text); font-size: 18px; font-weight: 800; }
 .empty-state p  { color: var(--text-muted); font-size: 14px; line-height: 1.6; max-width: 260px; }
+
+/* ── Botão favoritar ─────────────────────────────────── */
+.fav-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.fav-btn:hover { transform: scale(1.25); }
+
+/* ── Botão cancelar reserva ──────────────────────────── */
+.btn-cancelar {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid rgba(255,107,107,0.3);
+  border-radius: var(--r-md);
+  color: var(--red);
+  font-size: 13px; font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-cancelar:hover { background: var(--red-dim); border-color: var(--red); }
+
+/* ── Modal cancelamento ──────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 500;
+  align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  width: 100%; max-width: var(--max-w);
+  max-height: 85vh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: slideUp .3s ease;
+}
+@keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { color: var(--text); font-size: 17px; font-weight: 800; }
+.modal-close {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--text-muted); width: 32px; height: 32px;
+  border-radius: 50%; font-size: 13px; cursor: pointer;
+}
+.modal-body {
+  flex: 1; overflow-y: auto; padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.cancel-detail-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.cancel-detail-row span { color: var(--text-muted); }
+.cancel-detail-row strong { color: var(--text); }
+
+.aviso-sem-estorno, .aviso-com-estorno {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px; border-radius: var(--r-md); margin-top: 4px;
+}
+.aviso-sem-estorno {
+  background: rgba(255,107,107,0.08);
+  border: 1px solid rgba(255,107,107,0.25);
+}
+.aviso-sem-estorno strong { color: var(--red); display: block; margin-bottom: 4px; }
+.aviso-sem-estorno p  { color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.aviso-com-estorno {
+  background: rgba(0,229,160,0.06);
+  border: 1px solid rgba(0,229,160,0.2);
+}
+.aviso-com-estorno strong { color: var(--accent); display: block; margin-bottom: 4px; }
+.aviso-com-estorno p  { color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.aviso-icon { font-size: 22px; flex-shrink: 0; }
+
+#btnConfirmarCancelamento {
+  background: var(--gradient);
+}
