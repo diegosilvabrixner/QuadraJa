@@ -50,7 +50,7 @@ const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
 // { courtId: [array de horarios já reservados] }
 const slotsPorQuadra = {};
 reservas
-  .filter(r => r.arena === arenaName)
+  .filter(r => r.arena === arenaName && r.status !== 'cancelada')
   .forEach(r => {
     if (!slotsPorQuadra[r.court]) slotsPorQuadra[r.court] = [];
     (r.horariosList || []).forEach(h => {

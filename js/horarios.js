@@ -47,8 +47,19 @@ function isSlotPast(timeStr, dateStr) {
 // ── Slots ocupados por reservas salvas ────────────────
 function getOccupiedSlots(date) {
   const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
+  const d        = dateFromStr(date);
+  const weekdays = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const dayName  = d ? weekdays[d.getDay()] : null;
+
   return reservas
-    .filter(r => r.arena === arenaName && r.court === courtId && r.data === date)
+    .filter(r => {
+      if (r.arena !== arenaName || r.court !== courtId) return false;
+      if (r.status === 'cancelada') return false;          // ignora canceladas
+      if (r.tipo === 'avulso') return r.data === date;
+      // mensal: bloqueia o slot em QUALQUER terça (ou o dia correspondente)
+      if (r.tipo === 'mensal' && dayName && r.weekday === dayName) return true;
+      return false;
+    })
     .flatMap(r => r.horariosList || []);
 }
 
@@ -218,6 +229,7 @@ document.getElementById('continueBtn').addEventListener('click', () => {
     court:    courtId,
     tipo:     mode,
     data:     selectedDay || '',
+    weekday:  weekday || '',
     horarios: selectedSlots.sort().join(','),
     preco:    total,
   });

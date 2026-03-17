@@ -9,6 +9,7 @@ const data       = params.get('data')    || '—';
 const horarios   = params.get('horarios')|| '—';   // "10:00,11:00,15:00"
 const preco      = params.get('preco')   || '80';
 
+const weekday      = params.get('weekday')  || '';
 const horariosList = horarios !== '—' ? horarios.split(',') : [];
 
 // ── Preenche resumo ───────────────────────────────────
@@ -115,9 +116,11 @@ payBtn.addEventListener('click', () => {
       court:        courtId,
       tipo,
       data,
+      weekday,           // dia da semana para bloqueio mensal
       horarios:     horariosList.sort().map(h=>`${h}–${addHour(h)}`).join(', '),
       horariosList,
       preco,
+      status:       'confirmada',
       pagoEm:       new Date().toLocaleString('pt-BR'),
     };
     reservas.push(novaReserva);
@@ -129,6 +132,7 @@ payBtn.addEventListener('click', () => {
       court:   courtId,
       tipo,
       data,
+      weekday,
       horarios: horarios,
       preco,
       id:      novaReserva.id,

@@ -200,3 +200,53 @@
 #btnConfirmarCancelamento {
   background: var(--gradient);
 }
+
+/* ── Filtros de reserva ──────────────────────────────── */
+.res-filters {
+  display: flex; gap: 7px; margin-bottom: 16px;
+  overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;
+}
+.res-filters::-webkit-scrollbar { display: none; }
+.res-filter {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--r-full); padding: 6px 14px;
+  color: var(--text-muted); font-size: 12px; font-weight: 600;
+  white-space: nowrap; cursor: pointer; font-family: 'Outfit', sans-serif;
+  transition: all .2s;
+}
+.res-filter.active, .res-filter:hover {
+  background: var(--accent-dim);
+  border-color: rgba(0,229,160,.35);
+  color: var(--accent);
+}
+
+/* ── Botão avaliar ───────────────────────────────────── */
+.btn-avaliar {
+  width: 100%; margin-top: 10px;
+  padding: 10px;
+  background: rgba(255,209,102,0.08);
+  border: 1px solid rgba(255,209,102,0.3);
+  border-radius: var(--r-md);
+  color: var(--yellow);
+  font-size: 13px; font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer; transition: all .2s;
+}
+.btn-avaliar:hover { background: rgba(255,209,102,0.15); }
+
+/* ── Modal avaliação — estrelas ──────────────────────── */
+.aval-stars-row {
+  display: flex; justify-content: center; gap: 8px; margin-bottom: 4px;
+}
+.aval-star {
+  background: none; border: none;
+  font-size: 32px; cursor: pointer;
+  transition: transform .15s;
+  line-height: 1; padding: 4px;
+}
+.aval-star:hover, .aval-star.active { transform: scale(1.2); }
+.aval-labels-row {
+  display: flex; justify-content: space-between;
+  color: var(--text-dim); font-size: 11px;
+  padding: 0 4px; margin-bottom: 4px;
+}

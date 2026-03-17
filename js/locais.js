@@ -122,7 +122,7 @@ function showPage(name) {
   document.querySelector(`.nav-item[data-page="${name}"]`).classList.add('active');
   switch (name) {
     case 'locais':    mainList.style.display   = ''; break;
-    case 'reservas':  pReservas.style.display  = ''; renderReservas();  break;
+    case 'reservas':  pReservas.style.display  = ''; renderReservas(); checkPendingReviews(); break;
     case 'favoritos': pFavoritos.style.display = ''; renderFavoritos(); break;
     case 'perfil':    pPerfil.style.display    = ''; renderPerfil();    break;
   }
@@ -175,13 +175,20 @@ function cancelarReserva(idx) {
 }
 
 function horasAteReserva(r) {
+  // Mensal e avulso sem data retornam null
   if (!r.data || r.data === '—') return null;
-  const [d, m, y] = r.data.split('/').map(Number);
-  const primeiroSlot = (r.horariosList || [])[0];
+
+  const parts = r.data.split('/');
+  if (parts.length !== 3) return null;
+  const [d, m, y] = parts.map(Number);
+  if (!d || !m || !y) return null;
+
+  const primeiroSlot = (r.horariosList || []).sort()[0];
   if (!primeiroSlot) return null;
+
   const [h, min] = primeiroSlot.split(':').map(Number);
   const reservaDate = new Date(y, m - 1, d, h, min);
-  return (reservaDate - new Date()) / (1000 * 60 * 60);
+  return (reservaDate - Date.now()) / (1000 * 60 * 60);
 }
 
 function fecharModalCancelamento() {
@@ -193,11 +200,23 @@ function confirmarCancelamento() {
   const modal = document.getElementById('modalCancelamento');
   const idx   = modal._reservaIdx;
   const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
-  reservas.splice(idx, 1);
+
+  // Marca como cancelada (não remove — mantém histórico e aparece no filtro)
+  reservas[idx].status      = 'cancelada';
+  reservas[idx].canceladaEm = new Date().toLocaleString('pt-BR');
+
   localStorage.setItem('qj_reservas', JSON.stringify(reservas));
   fecharModalCancelamento();
+
+  // Muda o filtro ativo para "Canceladas" para o usuário ver o resultado
+  const btn = document.querySelector('.res-filter[data-filter="cancelada"]');
+  if (btn) {
+    document.querySelectorAll('.res-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
   renderReservas();
-  showToast('Reserva cancelada com sucesso', 'success');
+  showToast('Reserva cancelada. Acompanhe em Canceladas.', 'success');
 }
 
 // ── Renderizar reservas ────────────────────────────────
@@ -218,12 +237,57 @@ function renderReservas() {
     return;
   }
 
-  list.innerHTML = reservas.slice().reverse().map((r, i) => {
-    const realIdx = reservas.length - 1 - i; // índice real (invertido)
-    const horas   = horasAteReserva(r);
-    const passada = horas !== null && horas < 0;
-    const chipClass = passada ? 'chip-yellow' : 'chip-green';
-    const chipText  = passada ? 'Concluída' : '✓ Confirmada';
+  // Status calculado em runtime
+  function getStatus(r) {
+    // Status explícito sempre tem precedência (cancelada, etc.)
+    if (r.status === 'cancelada') return 'cancelada';
+
+    const horas = horasAteReserva(r);
+
+    // Mensal não tem data fixa — usa o status salvo, ou 'confirmada' como default
+    if (horas === null) return r.status || 'confirmada';
+
+    // Avulso/mensal com data: verifica se já passou
+    if (horas < 0) return 'concluida';
+    return 'confirmada';
+  }
+
+  const activeFilter = document.querySelector('.res-filter.active')?.dataset.filter || 'todas';
+
+  const filtered = reservas
+    .slice()
+    .reverse()
+    .map((r, i) => ({ r, realIdx: reservas.length - 1 - i, status: getStatus(r) }))
+    .filter(({ status }) => activeFilter === 'todas' || status === activeFilter);
+
+  if (!filtered.length) {
+    list.innerHTML = `
+      <div class="empty-state" style="padding-top:32px">
+        <span class="empty-icon">🔍</span>
+        <p>Nenhuma reserva com este status.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(({ r, realIdx, status }) => {
+    const chipMap = {
+      confirmada: ['chip-green',  '✓ Confirmada'],
+      concluida:  ['chip-yellow', '✓ Concluída'],
+      cancelada:  ['chip-red',    '✗ Cancelada'],
+    };
+    const [chipClass, chipText] = chipMap[status] || ['chip-green', 'Confirmada'];
+
+    // Exibe botão de cancelar só em confirmadas futuras
+    const cancelBtn = status === 'confirmada'
+      ? `<button class="btn-cancelar" onclick="cancelarReserva(${realIdx})">Cancelar reserva</button>`
+      : '';
+
+    // Botão avaliar se concluída e ainda não avaliada
+    const avaliarBtn = (status === 'concluida' && !r.avaliado)
+      ? `<button class="btn-avaliar" onclick="abrirAvaliacao(${realIdx})">⭐ Avaliar arena</button>`
+      : '';
+
+    const estrelas = r.avaliacao ? '⭐'.repeat(r.avaliacao.nota) : '';
 
     return `
     <div class="card reserva-card" style="margin-bottom:12px">
@@ -233,18 +297,17 @@ function renderReservas() {
         <div style="flex:1;min-width:0">
           <strong style="font-size:14px;display:block">${r.arena} · Quadra ${r.court}</strong>
           <p style="color:var(--text-muted);font-size:12px;margin-top:3px">
-            ${r.data !== '—' ? r.data + ' · ' : ''}${r.horarios}
+            ${r.tipo === 'mensal' ? 'Plano mensal · ' : (r.data !== '—' ? r.data + ' · ' : '')}${r.horarios}
           </p>
           <div style="margin-top:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
             <span class="chip ${chipClass}">${chipText}</span>
             <strong style="color:var(--accent);font-size:15px">R$${r.preco}</strong>
           </div>
+          ${estrelas ? `<p style="font-size:13px;margin-top:6px">${estrelas} <span style="color:var(--text-muted);font-size:11px">${r.avaliacao.comentario || ''}</span></p>` : ''}
         </div>
       </div>
-      ${!passada ? `
-      <button class="btn-cancelar" onclick="cancelarReserva(${realIdx})">
-        Cancelar reserva
-      </button>` : ''}
+      ${cancelBtn}
+      ${avaliarBtn}
     </div>`;
   }).join('');
 }
@@ -318,6 +381,14 @@ function showToast(msg, type = '') {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+
+// ── Filtro de status de reservas ──────────────────────
+function setResFilter(btn) {
+  document.querySelectorAll('.res-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReservas();
+}
+window.setResFilter = setResFilter;
 // ── Logout ────────────────────────────────────────────
 function logout() {
   localStorage.removeItem('qj_user_name');
@@ -330,3 +401,76 @@ window.showPage                = showPage;
 window.cancelarReserva         = cancelarReserva;
 window.fecharModalCancelamento = fecharModalCancelamento;
 window.confirmarCancelamento   = confirmarCancelamento;
+
+// ── Avaliação pós-jogo ────────────────────────────────
+function abrirAvaliacao(idx) {
+  const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
+  const r = reservas[idx];
+  if (!r) return;
+
+  document.getElementById('avalArena').textContent   = r.arena;
+  document.getElementById('avalQuadra').textContent  = `Quadra ${r.court}`;
+  document.getElementById('avalData').textContent    = r.data !== '—' ? r.data : 'Plano mensal';
+  document.getElementById('avalHorario').textContent = r.horarios;
+
+  // Reset estrelas
+  setAvalStars(0);
+  document.getElementById('avalComentario').value = '';
+
+  const modal = document.getElementById('modalAvaliacao');
+  modal._reservaIdx = idx;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharAvaliacao() {
+  document.getElementById('modalAvaliacao').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+let notaSelecionada = 0;
+function setAvalStars(n) {
+  notaSelecionada = n;
+  document.querySelectorAll('.aval-star').forEach((s, i) => {
+    s.textContent = i < n ? '⭐' : '☆';
+    s.classList.toggle('active', i < n);
+  });
+  document.getElementById('btnEnviarAvaliacao').disabled = n === 0;
+}
+
+function confirmarAvaliacao() {
+  const modal    = document.getElementById('modalAvaliacao');
+  const idx      = modal._reservaIdx;
+  const comentario = document.getElementById('avalComentario').value.trim();
+
+  const reservas = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
+  reservas[idx].avaliado  = true;
+  reservas[idx].avaliacao = { nota: notaSelecionada, comentario };
+  localStorage.setItem('qj_reservas', JSON.stringify(reservas));
+
+  fecharAvaliacao();
+  renderReservas();
+  showToast(`Avaliação enviada! Obrigado pelo feedback ⭐`, 'success');
+}
+
+// Expor funções de avaliação
+window.abrirAvaliacao     = abrirAvaliacao;
+window.fecharAvaliacao    = fecharAvaliacao;
+window.setAvalStars       = setAvalStars;
+window.confirmarAvaliacao = confirmarAvaliacao;
+
+// ── Mostrar modal de avaliação pendente ao entrar na aba Reservas ──
+function checkPendingReviews() {
+  const reservas  = JSON.parse(localStorage.getItem('qj_reservas') || '[]');
+  // Encontra a mais recente concluída e não avaliada
+  const pending = reservas
+    .map((r, i) => ({ r, i }))
+    .filter(({ r }) => {
+      const horas = horasAteReserva(r);
+      return horas !== null && horas < 0 && !r.avaliado && r.status !== 'cancelada';
+    });
+  // Abre avaliação automaticamente se houver pendente
+  if (pending.length > 0) {
+    setTimeout(() => abrirAvaliacao(pending[0].i), 400);
+  }
+}
