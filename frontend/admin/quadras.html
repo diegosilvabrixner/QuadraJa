@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuadraJá Admin — Quadras</title>
+  <link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🏐</div><div><span>QuadraJá</span><small>Admin</small></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><span class="nav-section-label">Principal</span></div>
+      <a class="nav-item" data-page="dashboard.html" href="dashboard.html"><span class="icon">📊</span>Dashboard</a>
+      <a class="nav-item" data-page="reservas.html"  href="reservas.html"><span class="icon">📅</span>Reservas</a>
+      <a class="nav-item" data-page="quadras.html"   href="quadras.html"><span class="icon">🏐</span>Quadras</a>
+      <a class="nav-item" data-page="dayuse.html"    href="dayuse.html"><span class="icon">🌅</span>Dayuse</a>
+      <div class="nav-section"><span class="nav-section-label">Loja</span></div>
+      <a class="nav-item" data-page="produtos.html"  href="produtos.html"><span class="icon">🛒</span>Produtos</a>
+      <a class="nav-item" data-page="estoque.html"   href="estoque.html"><span class="icon">📦</span>Estoque</a>
+      <div class="nav-section"><span class="nav-section-label">Financeiro</span></div>
+      <a class="nav-item" data-page="financeiro.html" href="financeiro.html"><span class="icon">💰</span>DRE / Despesas</a>
+      <a class="nav-item" data-page="funcionarios.html" href="funcionarios.html"><span class="icon">👥</span>Funcionários</a>
+      <div class="nav-section"><span class="nav-section-label">Config</span></div>
+      <a class="nav-item" data-page="arena.html"    href="arena.html"><span class="icon">⚙️</span>Arena</a>
+      <a class="nav-item" data-page="feriados.html" href="feriados.html"><span class="icon">🗓️</span>Feriados</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+      <div><div class="sidebar-user-name" id="sidebarUserName">Admin</div></div>
+      <button class="sidebar-logout" onclick="adminLogout()" title="Sair">↩</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <span class="topbar-title">Quadras</span>
+      <div class="topbar-actions">
+        <span class="topbar-arena" id="topbarArena"></span>
+        <button class="btn btn-primary" onclick="abrirModal('modalQuadra');modoEdicao=null">+ Nova Quadra</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Código</th><th>Nome</th><th>Tipo</th><th>Preço/h</th><th>Mensal</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="quadrasTbody"><tr><td colspan="7" style="text-align:center;color:var(--text-muted)">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal quadra -->
+  <div class="modal-backdrop" id="modalQuadra">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalQuadraTitle">Nova Quadra</h3>
+        <button class="modal-close" onclick="fecharModal('modalQuadra')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Código *</label><input class="form-control" id="qCodigo" placeholder="A1"/></div>
+          <div class="form-group"><label class="form-label">Nome *</label><input class="form-control" id="qNome" placeholder="Quadra A1"/></div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Tipo *</label>
+            <select class="form-control" id="qTipo">
+              <option value="AREIA">Areia</option>
+              <option value="PISO">Piso</option>
+              <option value="COBERTA">Coberta</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status *</label>
+            <select class="form-control" id="qStatus">
+              <option value="ATIVA">Ativa</option>
+              <option value="MANUTENCAO">Manutenção</option>
+              <option value="INATIVA">Inativa</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Preço por hora (R$) *</label><input class="form-control" id="qValorHora" type="number" min="0" step="0.01" placeholder="80.00"/></div>
+          <div class="form-group"><label class="form-label">Preço mensal (R$) *</label><input class="form-control" id="qValorMensal" type="number" min="0" step="0.01" placeholder="280.00"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Descrição</label><input class="form-control" id="qDescricao" placeholder="Detalhes opcionais..."/></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="fecharModal('modalQuadra')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarQuadra()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal histórico status -->
+  <div class="modal-backdrop" id="modalHistoricoStatus">
+    <div class="modal">
+      <div class="modal-header"><h3>Histórico de Status</h3><button class="modal-close" onclick="fecharModal('modalHistoricoStatus')">✕</button></div>
+      <div class="modal-body" id="historicoStatusBody"><div class="empty-admin">Carregando...</div></div>
+    </div>
+  </div>
+
+  <script src="../../js/api.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/quadras.js"></script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuadraJá Admin — DRE / Despesas</title>
+  <link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+    <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🏐</div><div><span>QuadraJá</span><small>Admin</small></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><span class="nav-section-label">Principal</span></div>
+      <a class="nav-item" data-page="dashboard.html"   href="dashboard.html"><span class="icon">📊</span>Dashboard</a>
+      <a class="nav-item" data-page="reservas.html"    href="reservas.html"><span class="icon">📅</span>Reservas</a>
+      <a class="nav-item" data-page="quadras.html"     href="quadras.html"><span class="icon">🏐</span>Quadras</a>
+      <a class="nav-item" data-page="dayuse.html"      href="dayuse.html"><span class="icon">🌅</span>Dayuse</a>
+      <div class="nav-section"><span class="nav-section-label">Loja</span></div>
+      <a class="nav-item" data-page="produtos.html"    href="produtos.html"><span class="icon">🛒</span>Produtos</a>
+      <a class="nav-item" data-page="estoque.html"     href="estoque.html"><span class="icon">📦</span>Estoque</a>
+      <a class="nav-item" data-page="pedidos.html"     href="pedidos.html"><span class="icon">🧾</span>Pedidos</a>
+      <div class="nav-section"><span class="nav-section-label">Financeiro</span></div>
+      <a class="nav-item" data-page="financeiro.html"  href="financeiro.html"><span class="icon">💰</span>DRE / Despesas</a>
+      <a class="nav-item" data-page="funcionarios.html" href="funcionarios.html"><span class="icon">👥</span>Funcionários</a>
+      <div class="nav-section"><span class="nav-section-label">Config</span></div>
+      <a class="nav-item" data-page="arena.html"       href="arena.html"><span class="icon">⚙️</span>Arena</a>
+      <a class="nav-item" data-page="feriados.html"    href="feriados.html"><span class="icon">🗓️</span>Feriados</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+      <div><div class="sidebar-user-name" id="sidebarUserName">Admin</div></div>
+      <button class="sidebar-logout" onclick="adminLogout()" title="Sair">↩</button>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <span class="topbar-title">DRE / Despesas</span>
+      <div class="topbar-actions"><span class="topbar-arena" id="topbarArena"></span></div>
+    </div>
+    <div class="content">
+
+      <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+        <input type="month" class="form-control" id="mesDRE" style="width:160px"/>
+        <button class="btn btn-secondary" onclick="carregarDRE()">Atualizar</button>
+        <button class="btn btn-primary" onclick="abrirModal('modalDespesa')">+ Lançar Despesa</button>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Receitas</span></div>
+          <div id="receitasList"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Despesas</span></div>
+          <div id="despesasList"></div>
+        </div>
+      </div>
+      <div class="panel mt-24">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0">
+          <span style="font-size:15px;font-weight:700">Resultado Líquido</span>
+          <span id="resultadoLiquido" style="font-size:22px;font-weight:900">—</span>
+        </div>
+      </div>
+      <div class="panel mt-24">
+        <div class="panel-header"><span class="panel-title">Despesas do mês</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Conta</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Lançado em</th></tr></thead>
+            <tbody id="despesasTbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-backdrop" id="modalDespesa">
+        <div class="modal">
+          <div class="modal-header"><h3>Lançar Despesa</h3><button class="modal-close" onclick="fecharModal('modalDespesa')">✕</button></div>
+          <div class="modal-body">
+            <div class="grid-2">
+              <div class="form-group"><label class="form-label">Código da conta</label><input class="form-control" id="dCodigo" placeholder="5.2.1"/></div>
+              <div class="form-group"><label class="form-label">Valor (R$) *</label><input class="form-control" id="dValor" type="number" step="0.01"/></div>
+            </div>
+            <div class="form-group"><label class="form-label">Descrição *</label><input class="form-control" id="dDescricao" placeholder="Ex: Conta de energia"/></div>
+            <div class="form-group"><label class="form-label">Categoria *</label>
+              <select class="form-control" id="dCategoria">
+                <option value="PESSOAL_SALARIOS">Pessoal — Salários</option>
+                <option value="PESSOAL_ENCARGOS">Pessoal — Encargos</option>
+                <option value="OPERACIONAL_ENERGIA">Operacional — Energia</option>
+                <option value="OPERACIONAL_AGUA">Operacional — Água</option>
+                <option value="OPERACIONAL_LIMPEZA">Operacional — Limpeza</option>
+                <option value="OPERACIONAL_MANUTENCAO">Operacional — Manutenção</option>
+                <option value="ADMINISTRATIVO_ALUGUEL">Administrativo — Aluguel</option>
+                <option value="ADMINISTRATIVO_SISTEMA">Administrativo — Sistema</option>
+                <option value="OUTROS">Outros</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Mês referência</label><input class="form-control" id="dMes" type="month"/></div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="fecharModal('modalDespesa')">Cancelar</button>
+            <button class="btn btn-primary" onclick="salvarDespesa()">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="../../js/api.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/financeiro.js"></script>
+</body>
+</html>

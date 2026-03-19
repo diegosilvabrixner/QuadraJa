@@ -1,0 +1,23 @@
+# ── Node ──────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+
+# ── Ambiente — NUNCA commitar ─────────────────────────
+.env
+backend/.env
+
+# ── Prisma ─────────────────────────────────────────────
+backend/prisma/migrations/dev.db
+*.db
+
+# ── Logs ───────────────────────────────────────────────
+*.log
+logs/
+
+# ── OS ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor ─────────────────────────────────────────────
+.vscode/settings.json
+.idea/

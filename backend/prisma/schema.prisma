@@ -1,0 +1,944 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ───────────────────────────────────────────────────
+
+enum PerfilUsuario {
+  CLIENTE
+  ADMIN_ARENA
+  SUPER_ADMIN
+}
+
+enum TipoQuadra {
+  AREIA
+  PISO
+  COBERTA
+}
+
+enum StatusQuadra {
+  ATIVA
+  MANUTENCAO
+  INATIVA
+}
+
+enum TipoReserva {
+  AVULSO
+  MENSAL
+  DAYUSE
+}
+
+enum StatusReserva {
+  AGUARDANDO_PAGAMENTO
+  CONFIRMADA
+  CANCELADA
+  CONCLUIDA
+  NAO_COMPARECEU
+}
+
+enum FormaPagamento {
+  PIX
+  CARTAO_CREDITO
+  CARTAO_DEBITO
+  DINHEIRO
+  CORTESIA
+}
+
+enum StatusPagamento {
+  PENDENTE
+  APROVADO
+  RECUSADO
+  REEMBOLSADO
+  ESTORNADO
+  EXPIRADO
+}
+
+enum TipoFeriado {
+  NACIONAL
+  REGIONAL
+  MUNICIPAL
+  INTERNO
+}
+
+enum StatusFuncionario {
+  ATIVO
+  FERIAS
+  AFASTADO
+  DESLIGADO
+}
+
+enum DiaSemana {
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+  DOMINGO
+}
+
+enum StatusProduto {
+  ATIVO
+  INATIVO
+  ESGOTADO
+}
+
+enum StatusPedido {
+  PENDENTE
+  CONFIRMADO
+  PREPARANDO
+  ENTREGUE
+  CANCELADO
+}
+
+enum TipoMovEstoque {
+  ENTRADA
+  SAIDA
+  AJUSTE
+  PERDA
+  DEVOLUCAO
+  INVENTARIO
+}
+
+enum CategoriaContabil {
+  PESSOAL_SALARIOS
+  PESSOAL_ENCARGOS
+  PESSOAL_BENEFICIOS
+  PESSOAL_FERIAS_13
+  OPERACIONAL_ENERGIA
+  OPERACIONAL_AGUA
+  OPERACIONAL_LIMPEZA
+  OPERACIONAL_MANUTENCAO
+  OPERACIONAL_MATERIAL
+  OPERACIONAL_SEGURANCA
+  ADMINISTRATIVO_ALUGUEL
+  ADMINISTRATIVO_INTERNET
+  ADMINISTRATIVO_SISTEMA
+  ADMINISTRATIVO_CONTABILIDADE
+  ADMINISTRATIVO_MARKETING
+  FINANCEIRO_TAXAS_BANCARIAS
+  FINANCEIRO_GATEWAY
+  CUSTO_PRODUTOS
+  OUTROS
+}
+
+// ─── USUÁRIOS ─────────────────────────────────────────────────
+
+model Usuario {
+  id               String        @id @default(uuid())
+  nome             String
+  email            String        @unique
+  telefone         String?
+  cpf              String?       @unique
+  senhaHash        String
+  avatarUrl        String?
+  perfil           PerfilUsuario @default(CLIENTE)
+  emailVerificado  Boolean       @default(false)
+  ativo            Boolean       @default(true)
+  dataNascimento   DateTime?
+  criadoEm         DateTime      @default(now())
+  atualizadoEm     DateTime      @updatedAt
+
+  reservas                 Reserva[]
+  pedidos                  PedidoProduto[]
+  arenas                   Arena[]              @relation("DonoArena")
+  equipesArena             EquipeArena[]
+  avaliacoes               Avaliacao[]
+  notificacoes             Notificacao[]
+  sessoes                  SessaoUsuario[]
+  tentativasLogin          TentativaLogin[]
+  logsAcao                 LogAcao[]
+  historicoStatusQuadras   HistoricoStatusQuadra[] @relation("HistoricoStatusUsuario")
+
+  @@map("usuarios")
+}
+
+model SessaoUsuario {
+  id           String    @id @default(uuid())
+  usuarioId    String
+  tokenHash    String    @unique
+  ip           String?
+  userAgent    String?
+  dispositivo  String?
+  ativa        Boolean   @default(true)
+  criadaEm     DateTime  @default(now())
+  expiraEm     DateTime
+  encerradaEm  DateTime?
+  motivoFim    String?
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([tokenHash])
+  @@map("sessoes_usuarios")
+}
+
+model TentativaLogin {
+  id          String    @id @default(uuid())
+  email       String
+  ip          String?
+  userAgent   String?
+  sucesso     Boolean
+  motivoFalha String?
+  usuarioId   String?
+  tentadoEm   DateTime  @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+
+  @@index([email])
+  @@index([ip])
+  @@index([tentadoEm])
+  @@map("tentativas_login")
+}
+
+model TokenRecuperacao {
+  id       String    @id @default(uuid())
+  email    String
+  token    String    @unique
+  usado    Boolean   @default(false)
+  criadoEm DateTime  @default(now())
+  expiraEm DateTime
+  usadoEm  DateTime?
+
+  @@index([token])
+  @@map("tokens_recuperacao")
+}
+
+// ─── ARENAS ───────────────────────────────────────────────────
+
+model Arena {
+  id                   String    @id @default(uuid())
+  nome                 String
+  slug                 String    @unique
+  descricao            String?
+  telefone             String?
+  email                String?
+  logoUrl              String?
+  endereco             String
+  cidade               String
+  estado               String
+  cep                  String
+  latitude             Float?
+  longitude            Float?
+  plantaUrl            String?
+  horarioAbertura      String    @default("07:00")
+  horarioFechamento    String    @default("22:00")
+  minimoHorasReserva   Int       @default(1)
+  antecedenciaMinima   Int       @default(2)
+  antecedenciaMaxima   Int       @default(30)
+  horasCancelamento    Int       @default(4)
+  multaCancelamento    Float     @default(0)
+  produtosHabilitados  Boolean   @default(false)
+  dayuseHabilitado     Boolean   @default(false)
+  ativa                Boolean   @default(true)
+  donoId               String
+  criadaEm             DateTime  @default(now())
+  atualizadaEm         DateTime  @updatedAt
+
+  dono          Usuario           @relation("DonoArena", fields: [donoId], references: [id])
+  quadras       Quadra[]
+  equipe        EquipeArena[]
+  feriados      Feriado[]
+  funcionarios  Funcionario[]
+  despesas      Despesa[]
+  orcamentos    Orcamento[]
+  avaliacoes    Avaliacao[]
+  horarios      HorarioArena[]
+  notificacoes  Notificacao[]
+  produtos      Produto[]
+  categorias    CategoriaProduto[]
+  dayuses       Dayuse[]
+  historico     HistoricoArena[]
+
+  @@map("arenas")
+}
+
+model HistoricoArena {
+  id          String    @id @default(uuid())
+  arenaId     String
+  campo       String
+  valorAntes  String?
+  valorDepois String?
+  alteradoPor String?
+  alteradoEm  DateTime  @default(now())
+  motivo      String?
+
+  arena Arena @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+
+  @@index([arenaId])
+  @@map("historico_arenas")
+}
+
+model HorarioArena {
+  id         String    @id @default(uuid())
+  arenaId    String
+  diaSemana  DiaSemana
+  abertura   String
+  fechamento String
+  fechado    Boolean   @default(false)
+
+  arena Arena @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+
+  @@unique([arenaId, diaSemana])
+  @@map("horarios_arenas")
+}
+
+model EquipeArena {
+  id        String    @id @default(uuid())
+  arenaId   String
+  usuarioId String
+  cargo     String    @default("ATENDENTE")
+  criadoEm  DateTime  @default(now())
+
+  arena   Arena   @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([arenaId, usuarioId])
+  @@map("equipe_arenas")
+}
+
+// ─── QUADRAS ──────────────────────────────────────────────────
+
+model Quadra {
+  id           String       @id @default(uuid())
+  arenaId      String
+  codigo       String
+  nome         String
+  descricao    String?
+  tipo         TipoQuadra
+  status       StatusQuadra @default(ATIVA)
+  valorHora    Float
+  valorMensal  Float
+  abertura     String?
+  fechamento   String?
+  plantaX      Float?
+  plantaY      Float?
+  plantaW      Float?
+  plantaH      Float?
+  criadaEm     DateTime     @default(now())
+  atualizadaEm DateTime     @updatedAt
+
+  arena           Arena                   @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+  reservas        Reserva[]
+  avaliacoes      Avaliacao[]
+  dayuseQuadras   DayuseQuadra[]
+  historicoPrecos HistoricoPrecoQuadra[]
+  historicoStatus HistoricoStatusQuadra[]
+
+  @@unique([arenaId, codigo])
+  @@map("quadras")
+}
+
+model HistoricoPrecoQuadra {
+  id                String    @id @default(uuid())
+  quadraId          String
+  valorHoraAntes    Float?
+  valorHoraDepois   Float?
+  valorMensalAntes  Float?
+  valorMensalDepois Float?
+  alteradoPor       String?
+  alteradoEm        DateTime  @default(now())
+  motivo            String?
+
+  quadra Quadra @relation(fields: [quadraId], references: [id], onDelete: Cascade)
+
+  @@index([quadraId])
+  @@map("historico_precos_quadras")
+}
+
+model HistoricoStatusQuadra {
+  id           String        @id @default(uuid())
+  quadraId     String
+  statusAntes  StatusQuadra?
+  statusDepois StatusQuadra
+  alteradoPor  String?
+  alteradoEm   DateTime      @default(now())
+  motivo       String?
+
+  quadra             Quadra   @relation(fields: [quadraId], references: [id], onDelete: Cascade)
+  alteradoPorUsuario Usuario? @relation("HistoricoStatusUsuario", fields: [alteradoPor], references: [id])
+
+  @@index([quadraId])
+  @@map("historico_status_quadras")
+}
+
+// ─── DAYUSE ───────────────────────────────────────────────────
+
+model Dayuse {
+  id               String    @id @default(uuid())
+  arenaId          String
+  nome             String
+  descricao        String?
+  data             DateTime
+  horaInicio       String
+  horaFim          String
+  valorPorPessoa   Float
+  maximoPessoas    Int?
+  pessoasInscritas Int       @default(0)
+  ativo            Boolean   @default(true)
+  exibirPopup      Boolean   @default(true)
+  criadoEm         DateTime  @default(now())
+  atualizadoEm     DateTime  @updatedAt
+
+  arena    Arena          @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+  quadras  DayuseQuadra[]
+  reservas Reserva[]
+
+  @@index([arenaId, data])
+  @@map("dayuses")
+}
+
+model DayuseQuadra {
+  id       String @id @default(uuid())
+  dayuseId String
+  quadraId String
+
+  dayuse Dayuse @relation(fields: [dayuseId], references: [id], onDelete: Cascade)
+  quadra Quadra @relation(fields: [quadraId], references: [id], onDelete: Cascade)
+
+  @@unique([dayuseId, quadraId])
+  @@map("dayuse_quadras")
+}
+
+// ─── RESERVAS ─────────────────────────────────────────────────
+
+model Reserva {
+  id                 String        @id @default(uuid())
+  usuarioId          String
+  quadraId           String
+  tipo               TipoReserva
+  status             StatusReserva @default(AGUARDANDO_PAGAMENTO)
+  data               DateTime?
+  horaInicio         String?
+  horaFim            String?
+  diaSemana          DiaSemana?
+  dayuseId           String?
+  numeroPessoas      Int?
+  valorTotal         Float
+  observacoes        String?
+  canceladaEm        DateTime?
+  motivoCancelamento String?
+  valorEstorno       Float?
+  criadaEm           DateTime      @default(now())
+  atualizadaEm       DateTime      @updatedAt
+
+  usuario         Usuario                  @relation(fields: [usuarioId], references: [id])
+  quadra          Quadra                   @relation(fields: [quadraId], references: [id])
+  dayuse          Dayuse?                  @relation(fields: [dayuseId], references: [id])
+  pagamento       Pagamento?
+  planoMensal     PlanoMensal?
+  avaliacao       Avaliacao?
+  historicoStatus HistoricoStatusReserva[]
+
+  @@index([usuarioId])
+  @@index([quadraId])
+  @@index([data])
+  @@map("reservas")
+}
+
+model HistoricoStatusReserva {
+  id           String         @id @default(uuid())
+  reservaId    String
+  statusAntes  StatusReserva?
+  statusDepois StatusReserva
+  alteradoPor  String?
+  alteradoEm   DateTime       @default(now())
+  motivo       String?
+  ip           String?
+
+  reserva Reserva @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+
+  @@index([reservaId])
+  @@map("historico_status_reservas")
+}
+
+model PlanoMensal {
+  id         String    @id @default(uuid())
+  reservaId  String    @unique
+  diaSemana  DiaSemana
+  horaInicio String
+  horaFim    String
+  dataInicio DateTime
+  dataFim    DateTime
+  ativo      Boolean   @default(true)
+
+  sessoes SessaoMensal[]
+  reserva Reserva        @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+
+  @@map("planos_mensais")
+}
+
+model SessaoMensal {
+  id          String        @id @default(uuid())
+  planoId     String
+  data        DateTime
+  status      StatusReserva @default(CONFIRMADA)
+  canceladaEm DateTime?
+
+  plano PlanoMensal @relation(fields: [planoId], references: [id], onDelete: Cascade)
+
+  @@index([planoId])
+  @@map("sessoes_mensais")
+}
+
+// ─── PAGAMENTOS ───────────────────────────────────────────────
+
+model Pagamento {
+  id              String          @id @default(uuid())
+  reservaId       String          @unique
+  forma           FormaPagamento
+  status          StatusPagamento @default(PENDENTE)
+  valor           Float
+  gatewayId       String?
+  gateway         String?
+  dadosBrutos     Json?
+  pixQrCode       String?
+  pixCopiaCola    String?
+  pixExpiraEm     DateTime?
+  bandeirCartao   String?
+  ultimos4Digitos String?
+  pagoEm          DateTime?
+  estornadoEm     DateTime?
+  criadoEm        DateTime        @default(now())
+  atualizadoEm    DateTime        @updatedAt
+
+  reserva           Reserva              @relation(fields: [reservaId], references: [id])
+  pagamentosPedidos PagamentoPedido[]
+  historico         HistoricoPagamento[]
+
+  @@index([gatewayId])
+  @@map("pagamentos")
+}
+
+model HistoricoPagamento {
+  id           String           @id @default(uuid())
+  pagamentoId  String
+  statusAntes  StatusPagamento?
+  statusDepois StatusPagamento
+  registradoEm DateTime         @default(now())
+  origem       String?
+  detalhes     String?
+  dadosGateway Json?
+
+  pagamento Pagamento @relation(fields: [pagamentoId], references: [id], onDelete: Cascade)
+
+  @@index([pagamentoId])
+  @@map("historico_pagamentos")
+}
+
+// ─── PRODUTOS & ESTOQUE ───────────────────────────────────────
+
+model CategoriaProduto {
+  id      String  @id @default(uuid())
+  arenaId String
+  nome    String
+  icone   String?
+  ordem   Int     @default(0)
+
+  arena    Arena     @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+  produtos Produto[]
+
+  @@map("categorias_produtos")
+}
+
+model Produto {
+  id              String        @id @default(uuid())
+  arenaId         String
+  categoriaId     String?
+  nome            String
+  descricao       String?
+  imagemUrl       String?
+  status          StatusProduto @default(ATIVO)
+  custo           Float
+  markup          Float         @default(100)
+  precoVenda      Float
+  controlaEstoque Boolean       @default(true)
+  qtdEstoque      Int           @default(0)
+  estoqueMinimo   Int           @default(5)
+  unidade         String        @default("un")
+  visivelClientes Boolean       @default(true)
+  criadoEm        DateTime      @default(now())
+  atualizadoEm    DateTime      @updatedAt
+
+  arena           Arena                  @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+  categoria       CategoriaProduto?      @relation(fields: [categoriaId], references: [id])
+  itensPedido     ItemPedido[]
+  movimentos      MovimentoEstoque[]
+  historicoPrecos HistoricoPrecoProduto[]
+
+  @@index([arenaId])
+  @@map("produtos")
+}
+
+model HistoricoPrecoProduto {
+  id           String    @id @default(uuid())
+  produtoId    String
+  custoAntes   Float?
+  custoDepois  Float?
+  markupAntes  Float?
+  markupDepois Float?
+  precoAntes   Float?
+  precoDepois  Float?
+  alteradoPor  String?
+  alteradoEm   DateTime  @default(now())
+  motivo       String?
+
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@index([produtoId])
+  @@map("historico_precos_produtos")
+}
+
+model MovimentoEstoque {
+  id            String         @id @default(uuid())
+  produtoId     String
+  tipo          TipoMovEstoque
+  quantidade    Int
+  estoqueAntes  Int
+  estoqueDepois Int
+  motivo        String?
+  custoUnitario Float?
+  valorTotal    Float?
+  referencia    String?
+  registradoPor String?
+  registradoEm  DateTime       @default(now())
+
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@index([produtoId])
+  @@index([registradoEm])
+  @@map("movimentos_estoque")
+}
+
+// ─── PEDIDOS DE PRODUTOS ──────────────────────────────────────
+
+model PedidoProduto {
+  id           String       @id @default(uuid())
+  usuarioId    String
+  arenaId      String
+  quadraId     String?
+  reservaId    String?
+  status       StatusPedido @default(PENDENTE)
+  valorTotal   Float
+  observacoes  String?
+  criadoEm     DateTime     @default(now())
+  atualizadoEm DateTime     @updatedAt
+
+  usuario   Usuario                @relation(fields: [usuarioId], references: [id])
+  itens     ItemPedido[]
+  pagamento PagamentoPedido?
+  historico HistoricoStatusPedido[]
+
+  @@index([usuarioId])
+  @@index([arenaId])
+  @@map("pedidos_produtos")
+}
+
+model HistoricoStatusPedido {
+  id           String        @id @default(uuid())
+  pedidoId     String
+  statusAntes  StatusPedido?
+  statusDepois StatusPedido
+  alteradoPor  String?
+  alteradoEm   DateTime      @default(now())
+  motivo       String?
+
+  pedido PedidoProduto @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  @@index([pedidoId])
+  @@map("historico_status_pedidos")
+}
+
+model ItemPedido {
+  id            String  @id @default(uuid())
+  pedidoId      String
+  produtoId     String
+  quantidade    Int
+  precoUnitario Float
+  subtotal      Float
+
+  pedido  PedidoProduto @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produto Produto       @relation(fields: [produtoId], references: [id])
+
+  @@map("itens_pedido")
+}
+
+model PagamentoPedido {
+  id          String          @id @default(uuid())
+  pedidoId    String          @unique
+  pagamentoId String?
+  forma       FormaPagamento
+  status      StatusPagamento @default(PENDENTE)
+  valor       Float
+  pagoEm      DateTime?
+  criadoEm    DateTime        @default(now())
+
+  pedido    PedidoProduto              @relation(fields: [pedidoId], references: [id])
+  pagamento Pagamento?                 @relation(fields: [pagamentoId], references: [id])
+  historico HistoricoPagamentoPedido[]
+
+  @@map("pagamentos_pedidos")
+}
+
+model HistoricoPagamentoPedido {
+  id              String           @id @default(uuid())
+  pagPedidoId     String
+  statusAntes     StatusPagamento?
+  statusDepois    StatusPagamento
+  registradoEm    DateTime         @default(now())
+  detalhes        String?
+
+  pagamentoPedido PagamentoPedido @relation(fields: [pagPedidoId], references: [id], onDelete: Cascade)
+
+  @@map("historico_pagamentos_pedidos")
+}
+
+// ─── FERIADOS ─────────────────────────────────────────────────
+
+model Feriado {
+  id         String      @id @default(uuid())
+  arenaId    String
+  data       DateTime
+  descricao  String
+  tipo       TipoFeriado
+  diaInteiro Boolean     @default(true)
+  horaInicio String?
+  horaFim    String?
+  quadrasIds String[]
+  criadoPor  String?
+  criadoEm   DateTime    @default(now())
+
+  arena Arena @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+
+  @@index([arenaId, data])
+  @@map("feriados")
+}
+
+// ─── FUNCIONÁRIOS ─────────────────────────────────────────────
+
+model Funcionario {
+  id               String            @id @default(uuid())
+  arenaId          String
+  nome             String
+  cargo            String
+  email            String?
+  telefone         String?
+  cpf              String?
+  status           StatusFuncionario @default(ATIVO)
+  salarioBase      Float
+  valeTransporte   Float             @default(0)
+  valeRefeicao     Float             @default(0)
+  outrosBeneficios Float             @default(0)
+  inss             Float             @default(0.20)
+  fgts             Float             @default(0.08)
+  dataAdmissao     DateTime
+  dataDemissao     DateTime?
+  observacoes      String?
+  criadoEm         DateTime          @default(now())
+  atualizadoEm     DateTime          @updatedAt
+
+  arena     Arena                  @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+  historico HistoricoFuncionario[]
+
+  @@map("funcionarios")
+}
+
+model HistoricoFuncionario {
+  id            String    @id @default(uuid())
+  funcionarioId String
+  campo         String
+  valorAntes    String?
+  valorDepois   String?
+  alteradoPor   String?
+  alteradoEm    DateTime  @default(now())
+  motivo        String?
+
+  funcionario Funcionario @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+
+  @@index([funcionarioId])
+  @@map("historico_funcionarios")
+}
+
+// ─── FINANCEIRO ───────────────────────────────────────────────
+
+model Despesa {
+  id            String            @id @default(uuid())
+  arenaId       String
+  categoria     CategoriaContabil
+  codigoConta   String
+  descricao     String
+  valor         Float
+  mesReferencia DateTime
+  comprovante   String?
+  observacoes   String?
+  pago          Boolean           @default(false)
+  pagoEm        DateTime?
+  lancadoPor    String?
+  criadaEm      DateTime          @default(now())
+  atualizadaEm  DateTime          @updatedAt
+
+  arena     Arena              @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+  historico HistoricoDespesa[]
+
+  @@index([arenaId, mesReferencia])
+  @@map("despesas")
+}
+
+model HistoricoDespesa {
+  id          String    @id @default(uuid())
+  despesaId   String
+  campo       String
+  valorAntes  String?
+  valorDepois String?
+  alteradoPor String?
+  alteradoEm  DateTime  @default(now())
+  motivo      String?
+
+  despesa Despesa @relation(fields: [despesaId], references: [id], onDelete: Cascade)
+
+  @@index([despesaId])
+  @@map("historico_despesas")
+}
+
+model Orcamento {
+  id            String            @id @default(uuid())
+  arenaId       String
+  categoria     CategoriaContabil
+  codigoConta   String
+  descricao     String
+  valorOrcado   Float
+  mesReferencia DateTime
+  criadoEm      DateTime          @default(now())
+
+  arena Arena @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+
+  @@unique([arenaId, codigoConta, mesReferencia])
+  @@map("orcamentos")
+}
+
+// ─── AVALIAÇÕES ───────────────────────────────────────────────
+
+model Avaliacao {
+  id         String    @id @default(uuid())
+  usuarioId  String
+  arenaId    String
+  quadraId   String?
+  reservaId  String?   @unique
+  nota       Int
+  comentario String?
+  visivel    Boolean   @default(true)
+  criadaEm   DateTime  @default(now())
+
+  usuario Usuario  @relation(fields: [usuarioId], references: [id])
+  arena   Arena    @relation(fields: [arenaId], references: [id], onDelete: Cascade)
+  quadra  Quadra?  @relation(fields: [quadraId], references: [id])
+  reserva Reserva? @relation(fields: [reservaId], references: [id])
+
+  @@unique([usuarioId, reservaId])
+  @@map("avaliacoes")
+}
+
+// ─── NOTIFICAÇÕES ─────────────────────────────────────────────
+
+model Notificacao {
+  id        String    @id @default(uuid())
+  usuarioId String?
+  arenaId   String?
+  tipo      String
+  titulo    String
+  corpo     String
+  dados     Json?
+  lida      Boolean   @default(false)
+  enviadaEm DateTime?
+  criadaEm  DateTime  @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+  arena   Arena?   @relation(fields: [arenaId], references: [id])
+
+  @@index([usuarioId, lida])
+  @@map("notificacoes")
+}
+
+// ─── LOGS ─────────────────────────────────────────────────────
+
+model LogAcao {
+  id           String    @id @default(uuid())
+  usuarioId    String?
+  emailAtor    String?
+  acao         String
+  entidade     String
+  entidadeId   String?
+  antes        Json?
+  depois       Json?
+  ip           String?
+  userAgent    String?
+  sucesso      Boolean   @default(true)
+  erro         String?
+  duracao      Int?
+  registradoEm DateTime  @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+
+  @@index([usuarioId])
+  @@index([entidade, entidadeId])
+  @@index([acao])
+  @@index([registradoEm])
+  @@map("logs_acoes")
+}
+
+model LogErroSistema {
+  id           String    @id @default(uuid())
+  nivel        String
+  mensagem     String
+  stack        String?
+  rota         String?
+  metodo       String?
+  usuarioId    String?
+  ip           String?
+  dados        Json?
+  registradoEm DateTime  @default(now())
+
+  @@index([nivel])
+  @@index([registradoEm])
+  @@map("logs_erros_sistema")
+}
+
+model LogWebhook {
+  id           String    @id @default(uuid())
+  origem       String
+  evento       String
+  payload      Json
+  processado   Boolean   @default(false)
+  sucesso      Boolean?
+  erro         String?
+  tentativas   Int       @default(1)
+  recebidoEm   DateTime  @default(now())
+  processadoEm DateTime?
+
+  @@index([origem])
+  @@index([processado])
+  @@map("logs_webhooks")
+}
+
+model LogNotificacaoEnviada {
+  id           String    @id @default(uuid())
+  tipo         String
+  destinatario String
+  assunto      String?
+  template     String?
+  referencia   String?
+  sucesso      Boolean
+  erro         String?
+  gateway      String?
+  gatewayId    String?
+  enviadoEm    DateTime  @default(now())
+
+  @@index([destinatario])
+  @@index([tipo])
+  @@map("logs_notificacoes_enviadas")
+}
