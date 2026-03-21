@@ -114,4 +114,97 @@ export async function authRoutes(fastify) {
     });
     return reply.send(updated);
   });
+
+  // POST /api/auth/esqueci-senha — solicitar recuperação
+  fastify.post('/esqueci-senha', async (request, reply) => {
+    const { email } = request.body;
+    if (!email) return reply.code(400).send({ error: 'E-mail obrigatório.' });
+
+    // Verifica se usuário existe (mas não revela se não existe — segurança)
+    const usuario = await fastify.prisma.usuario.findUnique({
+      where: { email: email.trim().toLowerCase() },
+    });
+
+    if (usuario) {
+      // Gera token seguro
+      const crypto = await import('crypto');
+      const token  = crypto.randomBytes(32).toString('hex');
+      const expira = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+      await fastify.prisma.tokenRecuperacao.create({
+        data: {
+          email: usuario.email,
+          token,
+          expiraEm: expira,
+        },
+      });
+
+      // Em produção: enviar email com link
+      // Por agora: retorna o token no log (dev) e uma mensagem genérica
+      fastify.log.info(`[DEV] Token de recuperação para ${usuario.email}: ${token}`);
+      fastify.log.info(`[DEV] Link: http://localhost:5500/html/redefinir-senha.html?token=${token}`);
+    }
+
+    // Sempre responde igual — não revela se e-mail existe
+    return reply.send({
+      mensagem: 'Se este e-mail estiver cadastrado, você receberá as instruções em breve.',
+    });
+  });
+
+  // POST /api/auth/redefinir-senha — usar token para redefinir
+  fastify.post('/redefinir-senha', async (request, reply) => {
+    const { token, novaSenha } = request.body;
+    if (!token || !novaSenha) {
+      return reply.code(400).send({ error: 'Token e nova senha são obrigatórios.' });
+    }
+    if (novaSenha.length < 8) {
+      return reply.code(400).send({ error: 'A senha precisa ter pelo menos 8 caracteres.' });
+    }
+
+    const registro = await fastify.prisma.tokenRecuperacao.findFirst({
+      where: { token, usado: false, expiraEm: { gt: new Date() } },
+    });
+
+    if (!registro) {
+      return reply.code(400).send({ error: 'Link inválido ou expirado. Solicite um novo.' });
+    }
+
+    const senhaHash = await bcrypt.hash(novaSenha, 12);
+
+    await fastify.prisma.$transaction([
+      fastify.prisma.usuario.update({
+        where: { email: registro.email },
+        data:  { senhaHash },
+      }),
+      fastify.prisma.tokenRecuperacao.update({
+        where: { id: registro.id },
+        data:  { usado: true, usadoEm: new Date() },
+      }),
+    ]);
+
+    return reply.send({ mensagem: 'Senha redefinida com sucesso! Faça login com a nova senha.' });
+  });
+
+  // POST /api/auth/alterar-senha — alterar senha logado
+  fastify.post('/alterar-senha', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    const { senhaAtual, novaSenha } = request.body;
+    if (!senhaAtual || !novaSenha) {
+      return reply.code(400).send({ error: 'Senha atual e nova senha são obrigatórias.' });
+    }
+    if (novaSenha.length < 8) {
+      return reply.code(400).send({ error: 'A nova senha precisa ter pelo menos 8 caracteres.' });
+    }
+
+    const usuario = await fastify.prisma.usuario.findUnique({ where: { id: request.user.id } });
+    const valida  = await bcrypt.compare(senhaAtual, usuario.senhaHash);
+    if (!valida) return reply.code(401).send({ error: 'Senha atual incorreta.' });
+
+    const novaSenhaHash = await bcrypt.hash(novaSenha, 12);
+    await fastify.prisma.usuario.update({
+      where: { id: request.user.id },
+      data:  { senhaHash: novaSenhaHash },
+    });
+
+    return reply.send({ mensagem: 'Senha alterada com sucesso.' });
+  });
 }

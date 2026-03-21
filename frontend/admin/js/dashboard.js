@@ -3,7 +3,7 @@
 const mesInput = document.getElementById('mesRef');
 mesInput.value = new Date().toISOString().slice(0, 7); // AAAA-MM
 
-window.addEventListener('arenaLoaded', () => carregarDashboard());
+window.addEventListener('arenaLoaded', () => { carregarDashboard(); carregarPerfil(); });
 mesInput.addEventListener('change', () => carregarDashboard());
 
 async function carregarDashboard() {
@@ -75,3 +75,59 @@ async function carregarDashboard() {
     }
   } catch {}
 }
+
+// ── Perfil do admin ────────────────────────────────────────────
+async function carregarPerfil() {
+  try {
+    const usuario = await api.get('/auth/me');
+    if (!usuario) return;
+
+    const nome  = usuario.nome || '';
+    const email = usuario.email || '';
+
+    document.getElementById('perfilNomeDisplay').textContent   = nome;
+    document.getElementById('perfilEmailDisplay').textContent  = email;
+    document.getElementById('perfilCargoDisplay').textContent  = usuario.perfil === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin Arena';
+    document.getElementById('perfilAvatarGrande').textContent  = nome[0]?.toUpperCase() || 'A';
+    document.getElementById('perfilNome').value     = nome;
+    document.getElementById('perfilTelefone').value = usuario.telefone || '';
+  } catch {}
+}
+
+async function salvarPerfil() {
+  const nome     = document.getElementById('perfilNome').value.trim();
+  const telefone = document.getElementById('perfilTelefone').value.trim();
+
+  if (!nome) { toast('Nome é obrigatório.', 'error'); return; }
+
+  try {
+    await api.patch('/auth/me', { nome, telefone });
+    localStorage.setItem('qj_user_nome', nome.split(' ')[0]);
+    document.getElementById('sidebarUserName').textContent    = nome.split(' ')[0];
+    document.getElementById('perfilNomeDisplay').textContent  = nome;
+    document.getElementById('perfilAvatarGrande').textContent = nome[0]?.toUpperCase() || 'A';
+    document.getElementById('sidebarAvatar').textContent      = nome[0]?.toUpperCase() || 'A';
+    toast('Perfil atualizado!', 'success');
+  } catch (err) { toast('Erro: ' + err.message, 'error'); }
+}
+
+async function alterarSenha() {
+  const atual     = document.getElementById('senhaAtual').value;
+  const nova      = document.getElementById('novaSenha').value;
+  const confirmar = document.getElementById('confirmarSenha').value;
+
+  if (!atual || !nova || !confirmar) { toast('Preencha todos os campos de senha.', 'error'); return; }
+  if (nova.length < 8)               { toast('A nova senha precisa ter pelo menos 8 caracteres.', 'error'); return; }
+  if (nova !== confirmar)            { toast('As senhas não coincidem.', 'error'); return; }
+
+  try {
+    await api.post('/auth/alterar-senha', { senhaAtual: atual, novaSenha: nova });
+    document.getElementById('senhaAtual').value    = '';
+    document.getElementById('novaSenha').value     = '';
+    document.getElementById('confirmarSenha').value= '';
+    toast('Senha alterada com sucesso!', 'success');
+  } catch (err) { toast('Erro: ' + err.message, 'error'); }
+}
+
+window.salvarPerfil  = salvarPerfil;
+window.alterarSenha  = alterarSenha;

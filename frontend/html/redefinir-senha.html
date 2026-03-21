@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuadraJá — Redefinir Senha</title>
+  <link rel="stylesheet" href="../css/shared.css"/>
+  <link rel="stylesheet" href="../css/login.css"/>
+</head>
+<body>
+  <div class="page page-top">
+    <div class="screen login-screen">
+
+      <div class="login-logo fade-up">
+        <img src="../assets/logo.svg" alt="QuadraJá" class="logo-img"/>
+      </div>
+
+      <!-- Passo 1: digitar e-mail -->
+      <div id="stepEmail" class="fade-up-1">
+        <div class="login-welcome">
+          <h1>Esqueceu a senha? 🔑</h1>
+          <p>Digite seu e-mail e enviaremos as instruções</p>
+        </div>
+        <form id="formEmail" novalidate style="margin-top:24px">
+          <div class="input-group">
+            <label class="input-label">E-mail cadastrado</label>
+            <div class="input-wrap" id="emailWrap">
+              <span class="icon">✉️</span>
+              <input type="email" id="emailInput" placeholder="seu@email.com" autocomplete="email"/>
+            </div>
+            <span class="field-error" id="emailError" style="display:none"></span>
+          </div>
+          <button type="submit" class="btn-primary" id="btnEnviar" style="margin-top:8px">
+            Enviar instruções
+          </button>
+        </form>
+      </div>
+
+      <!-- Passo 2: digitar nova senha (quando vier via link com token) -->
+      <div id="stepSenha" class="fade-up-1" style="display:none">
+        <div class="login-welcome">
+          <h1>Nova senha 🔐</h1>
+          <p>Escolha uma senha forte para sua conta</p>
+        </div>
+        <form id="formSenha" novalidate style="margin-top:24px">
+          <div class="input-group">
+            <label class="input-label">Nova senha</label>
+            <div class="input-wrap" id="senhaWrap">
+              <span class="icon">🔒</span>
+              <input type="password" id="novaSenha" placeholder="Mínimo 8 caracteres"/>
+              <button type="button" class="toggle-pw" id="toggleNovaSenha">👁</button>
+            </div>
+            <span class="field-error" id="senhaError" style="display:none"></span>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Confirmar nova senha</label>
+            <div class="input-wrap" id="confirmarWrap">
+              <span class="icon">🔒</span>
+              <input type="password" id="confirmarSenha" placeholder="Repita a senha"/>
+            </div>
+            <span class="field-error" id="confirmarError" style="display:none"></span>
+          </div>
+          <button type="submit" class="btn-primary" id="btnRedefinir" style="margin-top:8px">
+            Redefinir senha
+          </button>
+        </form>
+      </div>
+
+      <!-- Passo 3: sucesso -->
+      <div id="stepSucesso" style="display:none;text-align:center;padding:32px 0">
+        <div style="font-size:56px;margin-bottom:16px">✅</div>
+        <h2 style="color:var(--accent);margin-bottom:8px">Pronto!</h2>
+        <p style="color:var(--text-muted);margin-bottom:24px" id="msgSucesso">
+          Verifique seu e-mail com as instruções.
+        </p>
+        <a href="login.html" class="btn-primary" style="display:inline-block;text-decoration:none">
+          Voltar ao login
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/redefinir-senha.js"></script>
+</body>
+</html>

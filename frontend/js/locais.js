@@ -90,31 +90,33 @@ function renderArenas(arenas) {
       </div>`;
   }).join('');
 
-  // Eventos
-  document.querySelectorAll('.arena-card').forEach(card => {
-    card.addEventListener('click', e => {
-      if (e.target.classList.contains('fav-btn')) return;
-      const id   = card.dataset.id;
-      const nome = card.dataset.nome;
-      card.style.borderColor = 'var(--accent)';
-      card.style.background  = 'var(--accent-dim)';
-      setTimeout(() => {
-        window.location.href = `quadras.html?arenaId=${id}&arena=${encodeURIComponent(nome)}`;
-      }, 300);
-    });
-  });
-
-  document.querySelectorAll('.fav-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
+  // Eventos — delegação no container para evitar conflito com fav-btn
+  const listEl = document.getElementById('arenaList');
+  listEl.onclick = (e) => {
+    // Fav button
+    const favBtn = e.target.closest('.fav-btn');
+    if (favBtn) {
       e.stopPropagation();
-      const arenaId = btn.dataset.id;
+      const arenaId = favBtn.dataset.id;
       const favs    = getFavs();
       const idx     = favs.indexOf(arenaId);
-      if (idx === -1) { favs.push(arenaId); btn.textContent='⭐'; }
-      else            { favs.splice(idx,1);  btn.textContent='☆'; }
+      if (idx === -1) { favs.push(arenaId); favBtn.textContent = '⭐'; }
+      else            { favs.splice(idx,1);  favBtn.textContent = '☆'; }
       saveFavs(favs);
-    });
-  });
+      return;
+    }
+    // Arena card
+    const card = e.target.closest('.arena-card');
+    if (!card) return;
+    const id   = card.dataset.id;
+    const nome = card.dataset.nome;
+    if (!id) return;
+    card.style.borderColor = 'var(--accent)';
+    card.style.background  = 'var(--accent-dim)';
+    setTimeout(() => {
+      window.location.href = `quadras.html?arenaId=${id}&arena=${encodeURIComponent(nome)}`;
+    }, 300);
+  };
 }
 
 // ── Busca e filtros ───────────────────────────────────────────
@@ -130,7 +132,7 @@ document.querySelectorAll('.fchip').forEach(chip => {
 
 // ── Favoritos ─────────────────────────────────────────────────
 function getFavs()  { return JSON.parse(localStorage.getItem('qj_favoritos') || '[]'); }
-function saveFavs(f){ localStorage.setItem('qj_favoritos', JSON.stringify(f)); }
+function saveFavs(f){ localStorage.setItem('qj_favoritos', JSON.stringify(f.filter(Boolean))); }
 
 // ── Bottom Nav ────────────────────────────────────────────────
 const mainList   = document.getElementById('mainList');
@@ -272,7 +274,7 @@ async function renderPerfil() {
   document.getElementById('perfilNome').textContent  = localStorage.getItem('qj_user_nome') || '—';
   document.getElementById('perfilEmail').textContent = localStorage.getItem('qj_user_email') || '—';
   document.getElementById('perfilAvatar').textContent = (localStorage.getItem('qj_user_nome')||'?')[0].toUpperCase();
-  document.getElementById('perfilFavCount').textContent = getFavs().length;
+  document.getElementById('perfilFavCount').textContent = getFavs().filter(Boolean).length;
 
   try {
     const { total } = await api.get('/reservas?limit=1');

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuadraJá Admin — Feriados</title>
+  <link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🏐</div><div><span>QuadraJá</span><small>Admin</small></div></div>
+    <nav class="sidebar-nav"><div class="nav-section"><span class="nav-section-label">Principal</span></div>
+      <a class="nav-item" data-page="dashboard.html" href="dashboard.html"><span class="icon">📊</span>Dashboard</a>
+      <a class="nav-item" data-page="reservas.html" href="reservas.html"><span class="icon">📅</span>Reservas</a>
+      <a class="nav-item" data-page="quadras.html" href="quadras.html"><span class="icon">🏐</span>Quadras</a>
+      <a class="nav-item" data-page="dayuse.html" href="dayuse.html"><span class="icon">🌅</span>Dayuse</a>
+      <div class="nav-section"><span class="nav-section-label">Loja</span></div>
+      <a class="nav-item" data-page="produtos.html" href="produtos.html"><span class="icon">🛒</span>Produtos</a>
+      <a class="nav-item" data-page="estoque.html" href="estoque.html"><span class="icon">📦</span>Estoque</a>
+      <a class="nav-item" data-page="pedidos.html" href="pedidos.html"><span class="icon">🧾</span>Pedidos</a>
+      <div class="nav-section"><span class="nav-section-label">Financeiro</span></div>
+      <a class="nav-item" data-page="financeiro.html" href="financeiro.html"><span class="icon">💰</span>DRE / Despesas</a>
+      <a class="nav-item" data-page="funcionarios.html" href="funcionarios.html"><span class="icon">👥</span>Funcionários</a>
+      <div class="nav-section"><span class="nav-section-label">Config</span></div>
+      <a class="nav-item" data-page="arena.html" href="arena.html"><span class="icon">⚙️</span>Arena</a>
+      <a class="nav-item" data-page="feriados.html" href="feriados.html"><span class="icon">🗓️</span>Feriados</a></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+      <div><div class="sidebar-user-name" id="sidebarUserName">Admin</div></div>
+      <button class="sidebar-logout" onclick="adminLogout()" title="Sair">↩</button>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><span class="topbar-title">Feriados e Bloqueios</span>
+      <div class="topbar-actions"><span class="topbar-arena" id="topbarArena"></span>
+        <button class="btn btn-primary" onclick="abrirModal('modalFeriado')">+ Novo Bloqueio</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Horário</th><th>Ações</th></tr></thead>
+            <tbody id="feriadosTbody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div class="modal-backdrop" id="modalFeriado">
+    <div class="modal">
+      <div class="modal-header"><h3>Novo Bloqueio</h3><button class="modal-close" onclick="fecharModal('modalFeriado')">✕</button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">Data *</label><input class="form-control" id="fData" type="date"/></div>
+        <div class="form-group"><label class="form-label">Descrição *</label><input class="form-control" id="fDesc" placeholder="Ex: Natal, Carnaval..."/></div>
+        <div class="form-group"><label class="form-label">Tipo</label>
+          <select class="form-control" id="fTipo">
+            <option value="NACIONAL">Nacional</option>
+            <option value="REGIONAL">Regional</option>
+            <option value="MUNICIPAL">Municipal</option>
+            <option value="INTERNO">Interno (fechamento próprio)</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label"><input type="checkbox" id="fDiaInteiro" checked onchange="toggleHoras()"/> Dia inteiro</label></div>
+        <div id="horasGroup" style="display:none">
+          <div class="grid-2">
+            <div class="form-group"><label class="form-label">De</label><input class="form-control" id="fInicio" type="time"/></div>
+            <div class="form-group"><label class="form-label">Até</label><input class="form-control" id="fFim" type="time"/></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="fecharModal('modalFeriado')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarFeriado()">Salvar</button>
+      </div>
+    </div>
+  </div>
+  <script src="../js/api.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/feriados.js"></script>
+</body>
+</html>

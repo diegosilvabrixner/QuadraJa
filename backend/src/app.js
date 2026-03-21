@@ -56,7 +56,7 @@ await fastify.register(productRoutes,     { prefix: '/api/products' });
 await fastify.register(dayuseRoutes,      { prefix: '/api/dayuses' });
 await fastify.register(financialRoutes,   { prefix: '/api/financial' });
 await fastify.register(webhookRoutes,     { prefix: '/webhooks' });
-await fastify.register(adminRoutes,       { prefix: '/admin' });
+await fastify.register(adminRoutes,       { prefix: '/api/admin' });
 
 // ── Health check ──────────────────────────────────────────────
 fastify.get('/health', () => ({
