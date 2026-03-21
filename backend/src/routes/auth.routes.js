@@ -4,114 +4,113 @@ import { z }  from 'zod';
 
 export async function authRoutes(fastify) {
 
-  // ── POST /api/auth/register ──────────────────────────
+  // POST /api/auth/register
   fastify.post('/register', async (request, reply) => {
     const schema = z.object({
-      name:      z.string().min(3, 'Nome precisa ter pelo menos 3 caracteres'),
-      email:     z.string().email('E-mail inválido'),
-      phone:     z.string().min(10, 'Telefone inválido'),
-      password:  z.string().min(8, 'Senha precisa ter pelo menos 8 caracteres'),
-      birthDate: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Data no formato DD/MM/AAAA'),
-      cpf:       z.string().optional(),
+      nome:          z.string().min(3, 'Nome precisa ter pelo menos 3 caracteres'),
+      email:         z.string().email('E-mail inválido'),
+      telefone:      z.string().min(10, 'Telefone inválido'),
+      senha:         z.string().min(8, 'Senha precisa ter pelo menos 8 caracteres'),
+      dataNascimento: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Data no formato DD/MM/AAAA'),
+      cpf:           z.string().optional(),
     });
 
     const body = schema.parse(request.body);
 
-    // Verificar e-mail duplicado
-    const existing = await fastify.prisma.user.findUnique({ where: { email: body.email } });
+    const existing = await fastify.prisma.usuario.findUnique({ where: { email: body.email.toLowerCase() } });
     if (existing) return reply.code(409).send({ error: 'Este e-mail já está cadastrado.' });
 
-    // Verificar CPF duplicado
     if (body.cpf) {
       const cpfClean = body.cpf.replace(/\D/g, '');
-      const cpfEx = await fastify.prisma.user.findUnique({ where: { cpf: cpfClean } });
+      const cpfEx = await fastify.prisma.usuario.findUnique({ where: { cpf: cpfClean } });
       if (cpfEx) return reply.code(409).send({ error: 'CPF já cadastrado.' });
     }
 
-    // Calcular idade
-    const [d, m, y] = body.birthDate.split('/').map(Number);
+    const [d, m, y] = body.dataNascimento.split('/').map(Number);
     const birth = new Date(y, m - 1, d);
     const age   = (Date.now() - birth.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
     if (age < 18) return reply.code(400).send({ error: 'É necessário ter pelo menos 18 anos.' });
 
-    const passwordHash = await bcrypt.hash(body.password, 12);
+    const senhaHash = await bcrypt.hash(body.senha, 12);
 
-    const user = await fastify.prisma.user.create({
+    const usuario = await fastify.prisma.usuario.create({
       data: {
-        name:         body.name,
-        email:        body.email,
-        phone:        body.phone,
-        cpf:          body.cpf?.replace(/\D/g, '') || null,
-        birthDate:    birth,
-        passwordHash,
+        nome:          body.nome.trim(),
+        email:         body.email.trim().toLowerCase(),
+        telefone:      body.telefone.replace(/\D/g, ''),
+        cpf:           body.cpf ? body.cpf.replace(/\D/g, '') : null,
+        dataNascimento: birth,
+        senhaHash,
       },
     });
 
     const token = fastify.jwt.sign(
-      { id: user.id, email: user.email, role: user.role, name: user.name },
+      { id: usuario.id, email: usuario.email, perfil: usuario.perfil, nome: usuario.nome },
       { expiresIn: '30d' }
     );
 
     return reply.code(201).send({
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email, perfil: usuario.perfil },
     });
   });
 
-  // ── POST /api/auth/login ─────────────────────────────
+  // POST /api/auth/login
   fastify.post('/login', async (request, reply) => {
-    const { email, password } = request.body;
+    // LOG temporário — remover após confirmar que o login funciona
+    fastify.log.info({ body: request.body, headers: request.headers['content-type'] }, 'LOGIN REQUEST');
 
-    if (!email || !password) {
+    const body = request.body || {};
+    const { email, password, senha } = body;
+    const pw = senha || password; // aceita ambos (senha = PT, password = EN)
+
+    if (!email || !pw) {
+      fastify.log.warn({ email, pw: !!pw, body }, 'Login rejeitado: campos vazios');
       return reply.code(400).send({ error: 'E-mail e senha são obrigatórios.' });
     }
 
-    const user = await fastify.prisma.user.findUnique({ where: { email: email.trim().toLowerCase() } });
+    const usuario = await fastify.prisma.usuario.findUnique({
+      where: { email: email.trim().toLowerCase() }
+    });
 
-    if (!user) {
-      return reply.code(401).send({ error: 'E-mail ou senha incorretos.' });
-    }
+    if (!usuario) return reply.code(401).send({ error: 'E-mail ou senha incorretos.' });
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) {
-      return reply.code(401).send({ error: 'E-mail ou senha incorretos.' });
-    }
+    const valid = await bcrypt.compare(pw, usuario.senhaHash);
+    if (!valid) return reply.code(401).send({ error: 'E-mail ou senha incorretos.' });
 
-    if (!user.active) {
-      return reply.code(403).send({ error: 'Conta desativada. Entre em contato com o suporte.' });
-    }
+    if (!usuario.ativo) return reply.code(403).send({ error: 'Conta desativada. Entre em contato com o suporte.' });
 
     const token = fastify.jwt.sign(
-      { id: user.id, email: user.email, role: user.role, name: user.name },
+      { id: usuario.id, email: usuario.email, perfil: usuario.perfil, nome: usuario.nome },
       { expiresIn: '30d' }
     );
 
     return reply.send({
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email, perfil: usuario.perfil },
     });
   });
 
-  // ── GET /api/auth/me ─────────────────────────────────
+  // GET /api/auth/me
   fastify.get('/me', { preHandler: [fastify.authenticate] }, async (request, reply) => {
-    const user = await fastify.prisma.user.findUnique({
+    const usuario = await fastify.prisma.usuario.findUnique({
       where: { id: request.user.id },
-      select: { id: true, name: true, email: true, phone: true, role: true, avatarUrl: true, createdAt: true },
+      select: { id: true, nome: true, email: true, telefone: true, perfil: true, avatarUrl: true },
     });
-    if (!user) return reply.code(404).send({ error: 'Usuário não encontrado.' });
-    return reply.send(user);
+    if (!usuario) return reply.code(404).send({ error: 'Usuário não encontrado.' });
+    return reply.send(usuario);
   });
 
-  // ── PATCH /api/auth/me — editar perfil ───────────────
+  // PATCH /api/auth/me
   fastify.patch('/me', { preHandler: [fastify.authenticate] }, async (request, reply) => {
-    const { name, phone } = request.body;
-    const updated = await fastify.prisma.user.update({
+    const { nome, telefone } = request.body;
+    const updated = await fastify.prisma.usuario.update({
       where: { id: request.user.id },
       data: {
-        ...(name  ? { name }  : {}),
-        ...(phone ? { phone } : {}),
+        ...(nome     ? { nome: nome.trim() }                   : {}),
+        ...(telefone ? { telefone: telefone.replace(/\D/g,'') } : {}),
       },
-      select: { id: true, name: true, email: true, phone: true },
+      select: { id: true, nome: true, email: true, telefone: true },
     });
     return reply.send(updated);
   });

@@ -29,9 +29,11 @@ const fastify = Fastify({
 
 // ── Plugins ───────────────────────────────────────────────────
 await fastify.register(cors, {
-  origin:      env.FRONTEND_URL,
+  // Em dev aceita qualquer origem. Em produção, troque por env.FRONTEND_URL
+  origin: env.isDev ? true : env.FRONTEND_URL,
   credentials: true,
   methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 });
 
 await fastify.register(jwt, {
