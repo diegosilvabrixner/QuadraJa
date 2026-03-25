@@ -71,15 +71,18 @@ function renderArenas(arenas) {
     const tipoIcon = a.quadras?.[0]?.tipo === 'AREIA' ? '🏖' : '🏟';
     const preco    = a.quadras?.[0]?.valorHora || '—';
 
+    // Usa <a> direto — sem JS para navegação, impossível falhar
+    const url = `./quadras.html?arenaId=${a.id}&arena=${encodeURIComponent(a.nome)}`;
     return `
-      <div class="arena-card" data-id="${a.id}" data-slug="${a.slug}" data-nome="${a.nome}"
-           data-tipo="${a.quadras?.[0]?.tipo || ''}" tabindex="0">
+      <a class="arena-card" href="${url}" style="text-decoration:none;display:flex">
         <div class="arena-image">${tipoIcon}</div>
         <div class="arena-info">
           <div class="arena-row1">
             <strong>${a.nome}</strong>
             ${statusChip}
-            <button class="fav-btn" data-id="${a.id}" title="${isFav?'Remover dos favoritos':'Adicionar aos favoritos'}">${isFav?'⭐':'☆'}</button>
+            <button class="fav-btn" data-id="${a.id}"
+              onclick="event.preventDefault();event.stopPropagation();toggleFavById('${a.id}',this)"
+              title="${isFav?'Remover dos favoritos':'Adicionar aos favoritos'}">${isFav?'⭐':'☆'}</button>
           </div>
           <p class="arena-addr">📍 ${a.endereco}${a.cidade ? ' · ' + a.cidade : ''}</p>
           <div class="arena-row2">
@@ -87,38 +90,20 @@ function renderArenas(arenas) {
             <span class="arena-courts">🏐 ${totalQuadras} quadra${totalQuadras !== 1 ? 's' : ''}</span>
           </div>
         </div>
-      </div>`;
+      </a>`;
   }).join('');
-
-  // Eventos — delegação no container para evitar conflito com fav-btn
-  const listEl = document.getElementById('arenaList');
-  listEl.onclick = (e) => {
-    // Fav button
-    const favBtn = e.target.closest('.fav-btn');
-    if (favBtn) {
-      e.stopPropagation();
-      const arenaId = favBtn.dataset.id;
-      const favs    = getFavs();
-      const idx     = favs.indexOf(arenaId);
-      if (idx === -1) { favs.push(arenaId); favBtn.textContent = '⭐'; }
-      else            { favs.splice(idx,1);  favBtn.textContent = '☆'; }
-      saveFavs(favs);
-      return;
-    }
-    // Arena card
-    const card = e.target.closest('.arena-card');
-    if (!card) return;
-    const id   = card.dataset.id;
-    const nome = card.dataset.nome;
-    if (!id) return;
-    card.style.borderColor = 'var(--accent)';
-    card.style.background  = 'var(--accent-dim)';
-    setTimeout(() => {
-      window.location.href = `quadras.html?arenaId=${id}&arena=${encodeURIComponent(nome)}`;
-    }, 300);
-  };
 }
 
+
+// ── Toggle favorito por ID (chamado inline nos cards) ────────
+function toggleFavById(arenaId, btn) {
+  const favs = getFavs();
+  const idx  = favs.indexOf(arenaId);
+  if (idx === -1) { favs.push(arenaId); btn.textContent = '⭐'; }
+  else            { favs.splice(idx,1);  btn.textContent = '☆'; }
+  saveFavs(favs);
+}
+window.toggleFavById = toggleFavById;
 // ── Busca e filtros ───────────────────────────────────────────
 document.getElementById('searchInput').addEventListener('input', () => renderArenas(arenasData));
 document.querySelectorAll('.fchip').forEach(chip => {
@@ -254,7 +239,7 @@ function renderFavoritos() {
   }
   list.innerHTML = favArenas.map(a => `
     <div class="arena-card" style="margin-bottom:12px;cursor:pointer"
-         onclick="window.location.href='quadras.html?arenaId=${a.id}&arena=${encodeURIComponent(a.nome)}'">
+         onclick="window.location.href='/html/quadras.html?arenaId=${a.id}&arena=${encodeURIComponent(a.nome)}'">
       <div class="arena-image">${a.quadras?.[0]?.tipo==='AREIA'?'🏖':'🏟'}</div>
       <div class="arena-info">
         <div class="arena-row1"><strong>${a.nome}</strong><span class="chip chip-green">Aberta</span></div>

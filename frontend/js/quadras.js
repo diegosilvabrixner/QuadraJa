@@ -1,13 +1,16 @@
 // quadras.js — QuadraJá — carrega quadras da API
 
-requireAuth('login.html');
+//requireAuth('login.html');
 
 const params    = new URLSearchParams(location.search);
-const arenaId   = params.get('arenaId') || '';
+//const arenaId   = params.get('arenaId') || '';
+const arenaId   = '563c0c97-f5f7-4c88-94e8-44092702f6d0'; // temporário para desenvolvimento
 const arenaName = params.get('arena')   || 'Arena';
+console.log('arenaId:', arenaId);
+console.log('arenaName:', arenaName);
 
 document.getElementById('arenaTitle').textContent = arenaName;
-if (!arenaId) { window.location.href = 'locais.html'; }
+//if (!arenaId) { window.location.href = 'locais.html'; }
 
 // ── Carregar quadras da API ───────────────────────────────────
 async function carregarQuadras() {
