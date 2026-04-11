@@ -1,8 +1,9 @@
 // locais.js — QuadraJá — carrega arenas e reservas da API
 
 // Protege rota — redireciona se não logado
-requireAuth('login.html');
-
+// requireAuth('login.html');
+console.log("script carregou");
+alert("locais.js carregou");
 // ── Dados do usuário do localStorage (salvo no login) ─────────
 const nome  = localStorage.getItem('qj_user_nome')  || 'visitante';
 const email = localStorage.getItem('qj_user_email') || '';
@@ -24,7 +25,24 @@ let arenasData    = [];
 // ── Carregar arenas da API ────────────────────────────────────
 async function carregarArenas() {
   try {
-    arenasData = await api.get('/arenas');
+    console.log('⏳ Carregando arenas...');
+    const resp = await api.get('/arenas');
+    console.log('✅ Resposta da API:', resp);
+
+    // Trata tanto array direto quanto objeto com array dentro
+    arenasData = Array.isArray(resp) ? resp : (resp.data || resp.arenas || []);
+
+    console.log(`📊 ${arenasData.length} arenas carregadas`);
+
+    // Valida se cada arena tem um ID
+    arenasData.forEach((a, i) => {
+      if (!a.id) {
+        console.warn(`⚠️ Arena ${i} sem ID:`, a);
+      } else {
+        console.log(`✓ Arena ${i}: ID=${a.id}, Nome=${a.nome}`);
+      }
+    });
+
     renderArenas(arenasData);
   } catch (err) {
     document.getElementById('arenaList').innerHTML = `
@@ -60,6 +78,12 @@ function renderArenas(arenas) {
 
   // Status visual: usa campo `ativa` e pode ser enriquecido depois pelo admin
   list.innerHTML = filtradas.map(a => {
+    // ⚠️ Validação crítica: garante que temos ID
+    if (!a.id) {
+      console.warn('❌ Arena sem ID:', a);
+      return '';
+    }
+
     const totalQuadras  = a._count?.quadras || a.quadras?.length || 0;
     const quadrasAtivas = a.quadras?.filter(q => q.status === 'ATIVA').length || 0;
     const isFav         = favs.includes(a.id);
@@ -73,6 +97,9 @@ function renderArenas(arenas) {
 
     // Usa <a> direto — sem JS para navegação, impossível falhar
     const url = `./quadras.html?arenaId=${a.id}&arena=${encodeURIComponent(a.nome)}`;
+    
+    console.log(`🔗 URL gerada para ${a.nome}:`, url);
+    
     return `
       <a class="arena-card" href="${url}" style="text-decoration:none;display:flex">
         <div class="arena-image">${tipoIcon}</div>
@@ -238,14 +265,14 @@ function renderFavoritos() {
     return;
   }
   list.innerHTML = favArenas.map(a => `
-    <div class="arena-card" style="margin-bottom:12px;cursor:pointer"
-         onclick="window.location.href='/html/quadras.html?arenaId=${a.id}&arena=${encodeURIComponent(a.nome)}'">
+    <a class="arena-card" style="margin-bottom:12px;cursor:pointer;text-decoration:none"
+       href="./quadras.html?arenaId=${a.id}&arena=${encodeURIComponent(a.nome)}">
       <div class="arena-image">${a.quadras?.[0]?.tipo==='AREIA'?'🏖':'🏟'}</div>
       <div class="arena-info">
         <div class="arena-row1"><strong>${a.nome}</strong><span class="chip chip-green">Aberta</span></div>
         <p class="arena-addr">📍 ${a.endereco}</p>
       </div>
-    </div>`).join('');
+    </a>`).join('');
 }
 
 // ── Perfil ────────────────────────────────────────────────────
@@ -266,6 +293,7 @@ async function renderPerfil() {
     document.getElementById('perfilReservasCount').textContent = total || 0;
   } catch { document.getElementById('perfilReservasCount').textContent = '—'; }
 }
+
 
 // ── Avaliação pós-jogo ────────────────────────────────────────
 let avaliacaoReservaId = null;
